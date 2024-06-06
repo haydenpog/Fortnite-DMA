@@ -243,7 +243,9 @@ void game_loop()
 
 		if (settings::visuals::enable)
 		{
-			ImColor box_color = is_visible(mesh) ? ImColor(250, 250, 250, 250) : ImColor(250, 0, 0, 250);
+			ImColor box_color = is_visible(mesh)
+				? ImColor(settings::visuals::boxColor[0], settings::visuals::boxColor[1], settings::visuals::boxColor[2], settings::visuals::boxColor[3])
+				: ImColor(settings::visuals::boxColor2[0], settings::visuals::boxColor2[1], settings::visuals::boxColor2[2], settings::visuals::boxColor2[3]);
 			if (settings::visuals::box)
 			{
 				draw_cornered_box(head2d.x - (box_width / 2), head2d.y, box_width, box_height, box_color, 1);
@@ -304,7 +306,11 @@ void render_menu()
 		{
 			ImGui::Checkbox("Enable", &settings::visuals::enable);
 			ImGui::Checkbox("Box", &settings::visuals::box);
-			ImGui::SameLine();
+			if (settings::visuals::box) {
+				ImGui::ColorEdit4("Visible", settings::visuals::boxColor);
+				ImGui::ColorEdit4("Non-Visible", settings::visuals::boxColor2);
+			}
+
 			ImGui::Checkbox("Fill Box", &settings::visuals::fill_box);
 			ImGui::Checkbox("Line", &settings::visuals::line);
 			ImGui::Checkbox("Distance", &settings::visuals::distance);
