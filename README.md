@@ -3,7 +3,9 @@ _______________________________________________________________________
 
 6/6/2024
 
-[+] Added Aimbot For kmbox B+ and .Net 
+[+] Added color selector for Visible and Non-Visible box
+
+[+] Added aimbot For kmbox B+ and .Net 
 
 [+] Fixed crashed if you don't have Kmbox. Esp will only work.
 
