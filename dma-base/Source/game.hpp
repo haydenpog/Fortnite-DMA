@@ -19,9 +19,6 @@ static char KmboxIp[24] = "";
 static char KmboxPort[10] = "";
 static char KmboxUUID[32] = "";
 
-
-
-
 void kmboxnet()
 {
 	kmNet_init(KmboxIp, KmboxPort, KmboxUUID);
@@ -160,11 +157,11 @@ void aimbot(uintptr_t target_mesh)
 			if (target.y + settings::screen_center_y < 0) target.y = 0;
 		}
 	}
-	if (settings::kmbox::kmboxnet)
+	if (settings::kmbox::kmboxnet && settings::aimbot::enable)
 	{
 		kmNet_mouse_move(target.x, target.y);
 	}
-	if (settings::kmbox::kmboxb)
+	if (settings::kmbox::kmboxb && settings::aimbot::enable)
 	{
 		kmBox::sendMove(target.x, target.y);
 	}
