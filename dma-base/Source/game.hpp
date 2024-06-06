@@ -15,6 +15,18 @@ D3DPRESENT_PARAMETERS p_params = { NULL };
 MSG messager = { NULL };
 HWND my_wnd = NULL;
 
+static char KmboxIp[24] = "";
+static char KmboxPort[10] = "";
+static char KmboxUUID[32] = "";
+
+
+
+
+void kmboxnet()
+{
+	kmNet_init(KmboxIp, KmboxPort, KmboxUUID);
+}
+
 bool kmBox::init()
 {
 	std::string port = kmBox::FindPort("USB-SERIAL CH340");
@@ -148,7 +160,15 @@ void aimbot(uintptr_t target_mesh)
 			if (target.y + settings::screen_center_y < 0) target.y = 0;
 		}
 	}
-	kmBox::sendMove(target.x, target.y);
+	if (settings::kmbox::kmboxnet)
+	{
+		kmNet_mouse_move(target.x, target.y);
+	}
+	if (settings::kmbox::kmboxb)
+	{
+		kmBox::sendMove(target.x, target.y);
+	}
+
 }
 
 void draw_cornered_box(int x, int y, int w, int h, const ImColor color, int thickness)
@@ -307,10 +327,6 @@ void render_menu()
 			}
 			ImGui::SameLine();
 
-			static char KmboxIp[24] = "";
-			static char KmboxPort[10] = "";
-			static char KmboxUUID[32] = "";
-
 			ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet);
 
 			if (settings::kmbox::kmboxnet)
@@ -322,7 +338,7 @@ void render_menu()
 
 			if (ImGui::Checkbox("Confirm", &settings::kmbox::confirm))
 			{
-				kmNet_init(KmboxIp, KmboxPort, KmboxUUID);
+				kmboxnet();
 			}
 			if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
 			break;

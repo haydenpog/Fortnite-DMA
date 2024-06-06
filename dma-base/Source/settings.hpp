@@ -23,6 +23,7 @@ namespace settings
 		inline bool fill_box = false;
 		inline bool line = false;
 		inline bool distance = false;
+
 	}
 	
 	namespace kmbox
