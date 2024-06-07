@@ -31,7 +31,7 @@ HRESULT directx_init()
     p_params.BackBufferHeight = 1080;
     p_params.EnableAutoDepthStencil = TRUE;
     p_params.AutoDepthStencilFormat = D3DFMT_D16;
-    p_params.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+    p_params.PresentationInterval = settings::visuals::vsync ? D3DPRESENT_INTERVAL_DEFAULT : D3DPRESENT_INTERVAL_IMMEDIATE;
 
     if (FAILED(p_object->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, my_wnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &p_params, 0, &p_device)))
     {
@@ -138,6 +138,17 @@ void draw_distance(Vector2 location, float distance, const ImColor color)
     ImGui::GetForegroundDrawList()->AddText(ImVec2(location.x - text_size.x / 2, location.y - text_size.y / 2), color, dist);
 }
 
+void reset_device()
+{
+    ImGui_ImplDX9_InvalidateDeviceObjects();
+    HRESULT hr = p_device->Reset(&p_params);
+    if (hr == D3DERR_DEVICENOTRESET)
+    {
+        hr = p_device->Reset(&p_params);
+    }
+    ImGui_ImplDX9_CreateDeviceObjects();
+}
+
 void game_loop()
 {
     uintptr_t base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
@@ -228,9 +239,13 @@ void game_loop()
 void render_menu()
 {
     ImGuiIO& io = ImGui::GetIO();
-    ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
-    ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
-    ImGui::Text("FPS: %.2f", io.Framerate);
+    if (settings::visuals::fps)
+    {
+        ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
+        ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Text("FPS: %.2f", io.Framerate);
+        ImGui::End();
+    }
     if (settings::aimbot::show_fov)
         ImGui::GetForegroundDrawList()->AddCircle(ImVec2(io.DisplaySize.x / 2, io.DisplaySize.y / 2), settings::aimbot::fov, ImColor(250, 250, 250, 250), 100, 1.0f);
 
@@ -245,7 +260,7 @@ void render_menu()
         ImGui::SameLine();
         if (ImGui::Button("Visuals", { 196, 20 })) settings::tab = 1;
         ImGui::SameLine();
-        if (ImGui::Button("Unload Cheat", { 196, 20 })) exit(0);
+        if (ImGui::Button("Misc", { 196, 20 })) settings::tab = 2;
 
         switch (settings::tab)
         {
@@ -301,6 +316,19 @@ void render_menu()
             ImGui::Checkbox("Line", &settings::visuals::line);
             ImGui::Checkbox("Distance", &settings::visuals::distance);
             break;
+       
+          case 2:
+              ImGui::Checkbox("FPS", &settings::visuals::fps);
+              if (ImGui::Checkbox("V-Sync", &settings::visuals::vsync)) // Add this line for the V-Sync checkbox
+              {
+                  // Update PresentationInterval and reset the device
+                  p_params.PresentationInterval = settings::visuals::vsync ? D3DPRESENT_INTERVAL_DEFAULT : D3DPRESENT_INTERVAL_IMMEDIATE;
+                  reset_device();
+              }
+              if(ImGui::Button("Unload Cheat", { 120, 20 }))  exit(0);
+
+
+              break;
         }
         ImGui::End();
     }

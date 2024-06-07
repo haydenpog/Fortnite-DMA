@@ -26,6 +26,8 @@ namespace settings
 		float boxColor3[4] = { 1.0f, 1.0f, 1.0f, 50.0f };
 		inline bool line = false;
 		inline bool distance = false;
+		inline bool fps = false;
+		bool vsync = true;
 
 	}
 	
