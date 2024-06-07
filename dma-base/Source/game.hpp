@@ -15,15 +15,6 @@ D3DPRESENT_PARAMETERS p_params = { NULL };
 MSG messager = { NULL };
 HWND my_wnd = NULL;
 
-static char KmboxIp[24] = "";
-static char KmboxPort[10] = "";
-static char KmboxUUID[32] = "";
-
-void kmboxnet()
-{
-	kmNet_init(KmboxIp, KmboxPort, KmboxUUID);
-}
-
 bool kmBox::init()
 {
 	std::string port = kmBox::FindPort("USB-SERIAL CH340");
@@ -297,22 +288,52 @@ void render_menu()
 		ImGui::SameLine();
 		if (ImGui::Button("Visuals", { 196, 20 })) settings::tab = 1;
 		ImGui::SameLine();
-		if (ImGui::Button("KmBox (Required)", { 196, 20 })) settings::tab = 2;
-		switch (settings::tab)
-		{
+		if (ImGui::Button("Unload Cheat", { 196, 20 })) exit(0);
+		switch (settings::tab) {
 		case 0:
-		{
-			ImGui::Checkbox("Enable", &settings::aimbot::enable);
-			ImGui::Checkbox("Show Fov", &settings::aimbot::show_fov);
-			ImGui::SliderFloat("##Fov", &settings::aimbot::fov, 50, 300, "Fov: %.2f");
-			ImGui::SliderFloat("##Smoothness", &settings::aimbot::smoothness, 1, 10, "Smoothness: %.2f");
+			ImGui::Checkbox("Enable Aimbot", &settings::aimbot::enable);
+			if (settings::aimbot::enable) {
+				if (ImGui::Checkbox("Kmbox B+", &settings::kmbox::kmboxb)) {
+					if (!kmBox::init()) {
+						settings::kmbox::kmboxb = false;
+					}
+					else {
+						ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
+						ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
+						ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
+					}
+				}
+
+				static char KmboxIp[24] = "";
+				static char KmboxPort[10] = "";
+				static char KmboxUUID[32] = "";
+
+				if (ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet)) {
+				}
+
+				if (settings::kmbox::kmboxnet) {
+					ImGui::InputText("KmboxIp", KmboxIp, IM_ARRAYSIZE(KmboxIp));
+					ImGui::InputText("KmboxPort", KmboxPort, IM_ARRAYSIZE(KmboxPort));
+					ImGui::InputText("KmboxUUID", KmboxUUID, IM_ARRAYSIZE(KmboxUUID));
+
+					if (ImGui::Button("Connect to Kmbox .NET")) {
+						if (!kmNet_init(KmboxIp, KmboxPort, KmboxUUID)) {
+							settings::kmbox::kmboxnet = false;
+						}
+						else {
+							ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
+							ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
+							ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
+						}
+					}
+				}
+			}
 			break;
-		}
 		case 1:
-		{
 			ImGui::Checkbox("Enable", &settings::visuals::enable);
 			ImGui::Checkbox("Box", &settings::visuals::box);
-			if (settings::visuals::box) {
+			if (settings::visuals::box)
+			{
 				ImGui::ColorEdit4("Visible", settings::visuals::boxColor);
 				ImGui::ColorEdit4("Non-Visible", settings::visuals::boxColor2);
 			}
@@ -321,37 +342,6 @@ void render_menu()
 			ImGui::Checkbox("Line", &settings::visuals::line);
 			ImGui::Checkbox("Distance", &settings::visuals::distance);
 			break;
-		}
-		case 2:
-		{
-			if (ImGui::Checkbox("Kmbox B+", &settings::kmbox::kmboxb))
-			{
-				if (settings::kmbox::kmboxb)
-				{
-					if (!kmBox::init())
-					{
-						settings::kmbox::kmboxb = false;
-					}
-				}
-			}
-			ImGui::SameLine();
-
-			ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet);
-
-			if (settings::kmbox::kmboxnet)
-			{
-				ImGui::InputText("KmboxIp", KmboxIp, IM_ARRAYSIZE(KmboxIp));
-				ImGui::InputText("KmboxPort", KmboxPort, IM_ARRAYSIZE(KmboxPort));
-				ImGui::InputText("KmboxUUID", KmboxUUID, IM_ARRAYSIZE(KmboxUUID));
-			}
-
-			if (ImGui::Checkbox("Confirm", &settings::kmbox::confirm))
-			{
-				kmboxnet();
-			}
-			if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
-			break;
-		}
 		}
 	}
 }
