@@ -1,6 +1,8 @@
 FORTNITE DMA
 _______________________________________________________________________
 
+https://discord.gg/REe2G5AwWh
+
 6/6/2024
 
 [+] Added color selector for Visible and Non-Visible box
