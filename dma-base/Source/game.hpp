@@ -297,34 +297,32 @@ void render_menu()
 					if (!kmBox::init()) {
 						settings::kmbox::kmboxb = false;
 					}
-					else {
-						ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
-						ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
-						ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
-					}
 				}
-
-				static char KmboxIp[24] = "";
-				static char KmboxPort[10] = "";
-				static char KmboxUUID[32] = "";
-
+				if (settings::kmbox::kmboxb) {
+					ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
+					ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
+					ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
+				}
+				 char KmboxIp[128] = "";
+				 char KmboxPort[128] = "";
+				 char KmboxUUID[128] = "";
 				if (ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet)) {
 				}
 
 				if (settings::kmbox::kmboxnet) {
-					ImGui::InputText("KmboxIp", KmboxIp, IM_ARRAYSIZE(KmboxIp));
-					ImGui::InputText("KmboxPort", KmboxPort, IM_ARRAYSIZE(KmboxPort));
-					ImGui::InputText("KmboxUUID", KmboxUUID, IM_ARRAYSIZE(KmboxUUID));
+					ImGui::InputText("Kmbox IP", settings::kmbox::KmboxIp, IM_ARRAYSIZE(settings::kmbox::KmboxIp));
+					ImGui::InputText("Kmbox Port", settings::kmbox::KmboxPort, IM_ARRAYSIZE(settings::kmbox::KmboxPort));
+					ImGui::InputText("Kmbox UUID", settings::kmbox::KmboxUUID, IM_ARRAYSIZE(settings::kmbox::KmboxUUID));
 
 					if (ImGui::Button("Connect to Kmbox .NET")) {
-						if (!kmNet_init(KmboxIp, KmboxPort, KmboxUUID)) {
+						if (!kmNet_init(settings::kmbox::KmboxIp, settings::kmbox::KmboxPort, settings::kmbox::KmboxUUID)) {
 							settings::kmbox::kmboxnet = false;
 						}
-						else {
-							ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
-							ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
-							ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
-						}
+					}
+					if (settings::kmbox::kmboxnet) {
+						ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
+						ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
+						ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
 					}
 				}
 			}

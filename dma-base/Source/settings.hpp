@@ -34,5 +34,8 @@ namespace settings
 		inline bool kmboxb = false;
 		inline bool kmboxnet = false;
 		inline bool confirm = false;
+		char KmboxIp[128] = "";
+		char KmboxPort[128] = "";
+		char KmboxUUID[128] = "";
 	}
 }
