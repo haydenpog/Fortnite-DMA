@@ -112,7 +112,7 @@ void create_overlay()
 		wcex.hInstance, NULL
 	);
 
-	SetWindowLong(my_wnd, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW);
+	SetWindowLong(my_wnd, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW);
 	SetLayeredWindowAttributes(my_wnd, RGB(0, 0, 0), 255, LWA_ALPHA);
 	MARGINS margin = { -1 };
 	DwmExtendFrameIntoClientArea(my_wnd, &margin);

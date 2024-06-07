@@ -422,13 +422,28 @@
     <ClInclude Include="Source\﻿kmbox.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Kmbox\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Kmbox\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Kmbox\excluded.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Kmbox\kmboxb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\kmbox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Source\kmboxNet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\HidTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\kmbox.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

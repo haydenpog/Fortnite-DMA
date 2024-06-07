@@ -86,6 +86,7 @@
     </ClCompile>
     <ClCompile Include="Source\kmboxNet.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Dma\Memory.cpp" />
@@ -100,6 +101,11 @@
     <ClInclude Include="Include\imgui\imstb_rectpack.h" />
     <ClInclude Include="Include\imgui\imstb_textedit.h" />
     <ClInclude Include="Include\imgui\imstb_truetype.h" />
+    <ClInclude Include="Source\Config.h" />
+    <ClInclude Include="Source\HidTable.h" />
+    <ClInclude Include="Source\kmbox.hpp" />
+    <ClInclude Include="Source\kmboxNet.h" />
+    <ClInclude Include="Source\Kmbox\excluded.h" />
     <ClInclude Include="Source\game.hpp" />
     <ClInclude Include="Source\Dma\Memory.h" />
     <ClInclude Include="Include\json.hpp" />
@@ -209,11 +215,11 @@
     <ClInclude Include="Include\spdlog\tweakme.h" />
     <ClInclude Include="Include\spdlog\version.h" />
     <ClInclude Include="Include\vmmdll.h" />
-    <ClInclude Include="Source\HidTable.h" />
-    <ClInclude Include="Source\kmbox.hpp" />
-    <ClInclude Include="Source\kmboxNet.h" />
+    <ClInclude Include="Source\Kmbox\config.h" />
     <ClInclude Include="Source\Kmbox\KmB.hpp" />
+    <ClInclude Include="Source\Kmbox\kmboxb.h" />
     <ClInclude Include="Source\librarys.hpp" />
+    <ClInclude Include="Source\Kmbox\manager.h" />
     <ClInclude Include="Source\Misc\Pch\Pch.h" />
     <ClInclude Include="Source\offsets.hpp" />
     <ClInclude Include="Source\sdk.hpp" />
