@@ -202,3 +202,29 @@ bool is_visible(uintptr_t mesh)
 	float last_render_time_on_screen = mem.Read<float>(mesh + LAST_SUMBIT_TIME_ON_SCREEN);
 	return last_render_time_on_screen + 0.06f >= last_sumbit_time;
 }
+bool kmBox::init()
+{
+	std::string port = kmBox::FindPort("USB-SERIAL CH340");
+	if (port.empty())
+	{
+		printf("[KMBOX] failed to find port!\n");
+		return false;
+	}
+
+	if (!kmBox::OpenPort(hSerial, port.c_str(), CBR_115200))
+	{
+		printf("[KMBOX] failed to open port!\n");
+		return false;
+	}
+
+	printf("[KMBOX] created successfully!\n");
+
+	return true;
+}
+
+void kmBox::sendMove(int x, int y)
+{
+	std::stringstream commandStream;
+	commandStream << "km.move(" << x << "," << y << ")\r\n";
+	SendCommand(hSerial, commandStream.str());
+}
