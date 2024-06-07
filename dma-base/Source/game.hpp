@@ -246,9 +246,16 @@ void game_loop()
 			ImColor box_color = is_visible(mesh)
 				? ImColor(settings::visuals::boxColor[0], settings::visuals::boxColor[1], settings::visuals::boxColor[2], settings::visuals::boxColor[3])
 				: ImColor(settings::visuals::boxColor2[0], settings::visuals::boxColor2[1], settings::visuals::boxColor2[2], settings::visuals::boxColor2[3]);
+
 			if (settings::visuals::box)
 			{
 				draw_cornered_box(head2d.x - (box_width / 2), head2d.y, box_width, box_height, box_color, 1);
+			}
+			if (settings::visuals::fill_box)
+			{
+				ImColor fill_color = box_color;
+				fill_color.Value.w = 0.5;
+				draw_filled_rect(head2d.x - (box_width / 2), head2d.y, box_width, box_height, fill_color);
 			}
 			if (settings::visuals::line)
 			{
@@ -259,7 +266,6 @@ void game_loop()
 				draw_distance(bottom2d, distance, ImColor(250, 250, 250, 250));
 			}
 		}
-
 		double dx = head2d.x - settings::screen_center_x;
 		double dy = head2d.y - settings::screen_center_y;
 		float dist = sqrtf(dx * dx + dy * dy);

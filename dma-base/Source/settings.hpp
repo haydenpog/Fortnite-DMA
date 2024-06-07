@@ -20,9 +20,10 @@ namespace settings
 	{
 		inline bool enable = false;
 		inline bool box = false;
+		inline bool fill_box = false;
 		float boxColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		float boxColor2[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		inline bool fill_box = false;
+		float boxColor3[4] = { 1.0f, 1.0f, 1.0f, 50.0f };
 		inline bool line = false;
 		inline bool distance = false;
 
