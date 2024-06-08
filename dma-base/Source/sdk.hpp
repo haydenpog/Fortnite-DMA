@@ -29,6 +29,49 @@ enum perfect_skeleton {
 	BONE_LFOOTOUT = 76
 };
 
+enum bone : int
+{
+	HumanBase = 0,
+	HumanPelvis = 2,
+	HumanLThigh1 = 71,
+	HumanLThigh2 = 77,
+	HumanLThigh3 = 72,
+	HumanLCalf = 74,
+	HumanLFoot2 = 75, // 73
+	HumanLFoot = 76, // 86
+	HumanLToe = 76,
+	HumanRThigh1 = 78,
+	HumanRThigh2 = 84,
+	HumanRThigh3 = 79,
+	HumanRCalf = 81,
+	HumanRFoot2 = 82,
+	HumanRFoot = 82, // 87
+	HumanRToe = 83,
+	HumanSpine1 = 7,
+	HumanSpine2 = 5,
+	HumanSpine3 = 2,
+	HumanLCollarbone = 9, // 9
+	HumanLUpperarm = 35,
+	HumanLForearm1 = 36,
+	HumanLForearm23 = 10,
+	HumanLForearm2 = 34,
+	HumanLForearm3 = 33,
+	HumanLPalm = 32,
+	HumanLHand = 11,
+	HumanRCollarbone = 38, // 98
+	HumanRUpperarm = 64,
+	HumanRForearm1 = 65,
+	HumanRForearm23 = 39,
+	HumanRForearm2 = 63,
+	HumanRForearm3 = 62,
+	HumanRHand = 40,
+	HumanRPalm = 58,
+	HumanNeck = 66,
+	HumanHead = 110,
+	HumanLowerHead = 106,
+	HumanChest = 65
+};
+
 class Vector2
 {
 public:
@@ -223,6 +266,16 @@ Vector3 get_entity_bone(uintptr_t mesh, int bone_id)
 	return Vector3(matrix._41, matrix._42, matrix._43);
 }
 
+static float powf_(float _X, float _Y) {
+	return (_mm_cvtss_f32(_mm_pow_ps(_mm_set_ss(_X), _mm_set_ss(_Y))));
+}
+static float sqrtf_(float _X) {
+	return (_mm_cvtss_f32(_mm_sqrt_ps(_mm_set_ss(_X))));
+}
+static double GetCrossDistance(double x1, double y1, double x2, double y2) {
+	return sqrtf(powf((x2 - x1), 2) + powf_((y2 - y1), 2));
+}
+
 bool is_visible(uintptr_t mesh)
 {
 	float last_sumbit_time = mem.Read<float>(mesh + offsets::LAST_SUMBIT_TIME);
@@ -255,3 +308,19 @@ void kmBox::sendMove(int x, int y)
 	commandStream << "km.move(" << x << "," << y << ")\r\n";
 	SendCommand(hSerial, commandStream.str());
 }
+
+Vector3 Prediction(Vector3 TargetPosition, Vector3 ComponentVelocity, float player_distance, float ProjectileSpeed = 239)
+{
+		float gravity = 3.5;
+		float TimeToTarget = player_distance / ProjectileSpeed;
+		float bulletDrop = abs(gravity) * (TimeToTarget * TimeToTarget) * 0.5;
+		return Vector3
+		{
+		TargetPosition.x + TimeToTarget * ComponentVelocity.x,
+		TargetPosition.y + TimeToTarget * ComponentVelocity.y,
+		TargetPosition.z + TimeToTarget * ComponentVelocity.z + bulletDrop
+		};
+}
+
+
+

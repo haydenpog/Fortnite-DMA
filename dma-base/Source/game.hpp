@@ -11,46 +11,51 @@
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "dwmapi.lib")
 
-
-void aimbot(uintptr_t target_mesh)
+void aimbot()
 {
-    if (!target_mesh || !is_visible(target_mesh)) return;
-    Vector3 head3d = get_entity_bone(target_mesh, 110);
-    Vector2 head2d = project_world_to_screen(head3d);
-    Vector2 target = { 0, 0 };
-    if (head2d.x != 0 && head2d.y != 0)
-    {
-        float screen_center_x = settings::screen_center_x;
-        float screen_center_y = settings::screen_center_y;
-        float smoothness = settings::aimbot::smoothness;
+    if (!cache::closest_mesh || !settings::aimbot::enable) {
+        Vector3 hitbox3d = get_entity_bone(cache::closest_mesh, bone::HumanHead);
 
-        target.x = (head2d.x - screen_center_x) / smoothness;
-        target.y = (head2d.y - screen_center_y) / smoothness;
+        Vector2 hitbox2d = project_world_to_screen(hitbox3d);
 
-        if (settings::kmbox::kmboxnet && settings::aimbot::enable)
+        if (hitbox2d.x != 0 && hitbox2d.y != 0 &&
+            GetCrossDistance(hitbox2d.x, hitbox2d.y, settings::screen_center_x, settings::screen_center_y) <= settings::aimbot::fov)
         {
-            kmNet_mouse_move(target.x, target.y);
-        }
-        if (settings::kmbox::kmboxb && settings::aimbot::enable)
-        {
-            kmBox::sendMove(target.x, target.y);
+            // Calculate the target position with prediction if necessary
+            float projectileSpeed = 60000;
+            Vector3 Velocity = mem.Read<Vector3>(mem.Read<uintptr_t>(cache::closest_mesh + offsets::ROOT_COMPONENT) + offsets::VELOCITY);
+            Vector3 Predictor = Prediction(hitbox3d, Velocity, cache::relative_location.distance(hitbox3d) / 100.0f, projectileSpeed);
+            Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
+
+            // Calculate the movement required to aim at the target
+            float screen_center_x = settings::screen_center_x;
+            float screen_center_y = settings::screen_center_y;
+            float smoothness = settings::aimbot::smoothness;
+
+            Vector2 target;
+            target.x = (hitbox_screen_predict.x - screen_center_x) / smoothness;
+            target.y = (hitbox_screen_predict.y - screen_center_y) / smoothness;
+
+            // Move the mouse to aim at the target
+            if (settings::kmbox::kmboxnet)
+            {
+                kmNet_mouse_move(target.x, target.y);
+            }
+            if (settings::kmbox::kmboxb)
+            {
+                kmBox::sendMove(target.x, target.y);
+            }
         }
     }
 }
-
 void game_loop()
 {
-    //auto handle = mem.CreateScatterHandle();
     cache::base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
     cache::uworld = mem.Read<uintptr_t>(cache::base + offsets::UWORLD);
-    //mem.AddScatterReadRequest(handle, cache::uworld + offsets::GAME_INSTANCE, &cache::game_instance, sizeof(uintptr_t));
-    //mem.ExecuteReadScatter(handle);
     cache::game_instance = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_INSTANCE);
     cache::local_players = mem.Read<uintptr_t>(mem.Read<uintptr_t>(cache::game_instance + offsets::LOCAL_PLAYERS));
     cache::player_controller = mem.Read<uintptr_t>(cache::local_players + offsets::PLAYER_CONTROLLER);
     cache::local_pawn = mem.Read<uintptr_t>(cache::player_controller + offsets::LOCAL_PAWN);
-   // mem.AddScatterReadRequest(handle, cache::local_players + offsets::PLAYER_CONTROLLER, &cache::player_controller, sizeof(uintptr_t));
-   // mem.AddScatterReadRequest(handle, cache::player_controller + offsets::LOCAL_PAWN, &cache::local_pawn, sizeof(uintptr_t));
 
     if (cache::local_pawn)
     {
@@ -78,7 +83,7 @@ void game_loop()
         uintptr_t mesh = mem.Read<uintptr_t>(pawn_private + offsets::MESH);
         if (!mesh) continue;
 
-        Vector3 head3d = get_entity_bone(mesh, 110);
+        Vector3 head3d = get_entity_bone(mesh, perfect_skeleton::BONE_HEAD);
         Vector2 head2d = project_world_to_screen(head3d);
         Vector3 bottom3d = get_entity_bone(mesh, 0);
         Vector2 bottom2d = project_world_to_screen(bottom3d);
@@ -116,21 +121,10 @@ void game_loop()
                 draw_distance(bottom2d, distance, ImColor(250, 250, 250, 250));
             }
         }
-
-        float dx = head2d.x - settings::screen_center_x;
-        float dy = head2d.y - settings::screen_center_y;
-        float dist = sqrtf(dx * dx + dy * dy);
-
-        if (dist <= settings::aimbot::fov && dist < cache::closest_distance)
+        if (settings::aimbot::enable)
         {
-            cache::closest_distance = dist;
-            cache::closest_mesh = mesh;
+            aimbot();
         }
-    }
-
-    if (settings::aimbot::enable)
-    {
-        aimbot(cache::closest_mesh);
     }
 }
 

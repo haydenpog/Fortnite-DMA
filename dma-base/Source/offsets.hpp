@@ -12,6 +12,7 @@ namespace offsets {
 	inline int TEAM_INDEX = 0x1211;
 	inline int GAME_STATE = 0x160;
 	inline int PLAYER_ARRAY = 0x2A8;
+	inline int VELOCITY = 0x168;
 	inline int MESH = 0x318;
 	inline int COMPONENT_TO_WORLD = 0x1C0;
 	inline int BONE_ARRAY = 0x5B8;

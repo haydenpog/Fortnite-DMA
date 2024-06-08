@@ -14,7 +14,9 @@ namespace settings
 		inline bool show_fov = false;
 		inline float fov = 150;
 		inline float smoothness = 5;
-		bool prediction = false;
+		inline bool prediction = false;
+		inline bool headbone = false;
+		inline bool chestbone = false;
 	}
 	
 	namespace visuals

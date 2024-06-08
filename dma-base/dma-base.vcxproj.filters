@@ -452,23 +452,10 @@
     <ClInclude Include="Source\Images\image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Lib\FTD3XX.lib" />
     <Library Include="Lib\leechcore.lib" />
     <Library Include="Lib\vmm.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="dma-base.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\..\..\..\Downloads\Untitled_1_.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>
