@@ -31,7 +31,7 @@ HRESULT directx_init()
     p_params.BackBufferHeight = 1080;
     p_params.EnableAutoDepthStencil = TRUE;
     p_params.AutoDepthStencilFormat = D3DFMT_D16;
-    p_params.PresentationInterval = settings::visuals::vsync ? D3DPRESENT_INTERVAL_DEFAULT : D3DPRESENT_INTERVAL_IMMEDIATE;
+    p_params.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
     if (FAILED(p_object->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, my_wnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &p_params, 0, &p_device)))
     {
@@ -137,18 +137,6 @@ void draw_distance(Vector2 location, float distance, const ImColor color)
     ImVec2 text_size = ImGui::CalcTextSize(dist);
     ImGui::GetForegroundDrawList()->AddText(ImVec2(location.x - text_size.x / 2, location.y - text_size.y / 2), color, dist);
 }
-
-void reset_device()
-{
-    ImGui_ImplDX9_InvalidateDeviceObjects();
-    HRESULT hr = p_device->Reset(&p_params);
-    if (hr == D3DERR_DEVICENOTRESET)
-    {
-        hr = p_device->Reset(&p_params);
-    }
-    ImGui_ImplDX9_CreateDeviceObjects();
-}
-
 void game_loop()
 {
     uintptr_t base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
@@ -239,6 +227,15 @@ void game_loop()
 void render_menu()
 {
     ImGuiIO& io = ImGui::GetIO();
+    auto current_time = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_time);
+    if (settings::visuals::fps) {
+        int frame_duration = 1000 / settings::visuals::fps_limit; 
+        if (elapsed.count() < frame_duration) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(frame_duration - elapsed.count()));
+        }
+    }
+    last_time = std::chrono::high_resolution_clock::now();
     if (settings::visuals::fps)
     {
         ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
@@ -281,12 +278,12 @@ void render_menu()
                     ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
                     ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
                 }
-                if (ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet))
+                ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet);
+                if (settings::kmbox::kmboxnet)
                 {
                     ImGui::InputText("Kmbox IP", settings::kmbox::KmboxIp, IM_ARRAYSIZE(settings::kmbox::KmboxIp));
                     ImGui::InputText("Kmbox Port", settings::kmbox::KmboxPort, IM_ARRAYSIZE(settings::kmbox::KmboxPort));
                     ImGui::InputText("Kmbox UUID", settings::kmbox::KmboxUUID, IM_ARRAYSIZE(settings::kmbox::KmboxUUID));
-
                     if (ImGui::Button("Connect to Kmbox .NET"))
                     {
                         if (!kmNet_init(settings::kmbox::KmboxIp, settings::kmbox::KmboxPort, settings::kmbox::KmboxUUID))
@@ -316,18 +313,14 @@ void render_menu()
             ImGui::Checkbox("Line", &settings::visuals::line);
             ImGui::Checkbox("Distance", &settings::visuals::distance);
             break;
-       
-          case 2:
-              ImGui::Checkbox("FPS", &settings::visuals::fps);
-              if (ImGui::Checkbox("V-Sync", &settings::visuals::vsync)) // Add this line for the V-Sync checkbox
-              {
-                  // Update PresentationInterval and reset the device
-                  p_params.PresentationInterval = settings::visuals::vsync ? D3DPRESENT_INTERVAL_DEFAULT : D3DPRESENT_INTERVAL_IMMEDIATE;
-                  reset_device();
-              }
-              if(ImGui::Button("Unload Cheat", { 120, 20 }))  exit(0);
-
-
+        
+        case 2:
+            ImGui::Checkbox("FPS", &settings::visuals::fps);
+            if (settings::visuals::fps)
+            {
+                ImGui::SliderInt("FPS Limit", &settings::visuals::fps_limit, 30, 240);
+            }
+              if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
               break;
         }
         ImGui::End();

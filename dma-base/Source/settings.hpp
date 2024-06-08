@@ -28,6 +28,7 @@ namespace settings
 		inline bool distance = false;
 		inline bool fps = false;
 		bool vsync = true;
+		int fps_limit = 60;
 
 	}
 	
@@ -41,3 +42,5 @@ namespace settings
 		char KmboxUUID[128] = "";
 	}
 }
+
+auto last_time = std::chrono::high_resolution_clock::now();
