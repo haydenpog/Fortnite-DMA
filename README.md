@@ -3,17 +3,18 @@ _______________________________________________________________________
 New change log in discord
 https://discord.gg/REe2G5AwWh
 
-6/6/2024
+6/7/2024 
 
-[+] Added color selector for Visible and Non-Visible box
+[+] UI Change up, more streamlined
 
-[+] Added aimbot For kmbox B+ and .Net 
+[+] Fixed fill box and added color selector for fill box
 
-[+] Fixed crashed if you don't have Kmbox. Esp will only work.
+[+] Fixed click through
 
-[+] Updated to 30.01
+[+] Slight performance improvement 
 
-[-] Performance is bad, even worse with aimbot
+[+] Added FPS Limiter and FPS counter 
+
 _______________________________________________________________________
 
 TODO
