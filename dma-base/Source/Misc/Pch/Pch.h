@@ -62,5 +62,6 @@ using json = nlohmann::json;
 #endif
 
 #include "Memory.h"
+#include "InputManager.h"
 #include <Kmbox/kmbox.hpp>
 #include <kmbox/kmboxNet.h>

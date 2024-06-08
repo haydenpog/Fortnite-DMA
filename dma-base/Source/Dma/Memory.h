@@ -1,5 +1,7 @@
 #pragma once
 #include <Pch.h>
+#include "InputManager.h"
+#include "Registry.h"
 
 class Memory
 {
@@ -42,6 +44,8 @@ private:
 	*/
 	bool SetFPGA();
 
+	std::shared_ptr<c_keys> key;
+
 	/*this->registry_ptr = std::make_shared<c_registry>(*this);
 	this->key_ptr = std::make_shared<c_keys>(*this);*/
 
@@ -61,6 +65,8 @@ public:
 	* @return true if successful, false if not.
 	*/
 	bool Init(std::string process_name, bool memMap = true, bool debug = false);
+
+	c_keys* GetKeyboard() { return key.get(); }
 
 	/*This part here is things related to the process information such as Base daddy, Size ect.*/
 

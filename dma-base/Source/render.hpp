@@ -210,6 +210,7 @@ void render_menu()
                 {
                     settings::aimbot::scaledProjectileSpeed = settings::aimbot::projectileSpeed * 1000.0f;
                     ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
+                    ImGui::Checkbox("Triggerbot", &settings::aimbot::triggerbot);
                     ImGui::SliderFloat("Prediction Speed", &settings::aimbot::projectileSpeed, 10.0f, 100.0f);
                     ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
                     ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");

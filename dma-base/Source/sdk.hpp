@@ -186,6 +186,7 @@ namespace cache {
     inline int player_count;
     inline float closest_distance;
     inline uintptr_t closest_mesh;
+    inline uintptr_t overlapping;
     inline Camera local_camera;
     inline uintptr_t base;
     inline Vector2 head2d;
@@ -272,6 +273,15 @@ void kmBox::sendMove(int x, int y) {
     commandStream << "km.move(" << x << "," << y << ")\r\n";
     SendCommand(hSerial, commandStream.str());
 }
+
+void kmBox::kmclick() {
+    std::string command = "km.left(" + std::to_string(1) + ")\r\n"; // left mouse button down
+    Sleep(10); // to stop it from crashing idk
+    std::string command1 = "km.left(" + std::to_string(0) + ")\r\n"; // left mouse button up
+    SendCommand(hSerial, command.c_str());
+    SendCommand(hSerial, command1.c_str());
+}
+
 
 Vector3 Prediction(Vector3 TargetPosition, Vector3 ComponentVelocity, float player_distance, float ProjectileSpeed = 239) {
     float gravity = 3.5f;

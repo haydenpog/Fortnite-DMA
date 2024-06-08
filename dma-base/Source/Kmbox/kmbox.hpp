@@ -9,6 +9,7 @@ namespace kmBox
 
     bool init();
     void sendMove(int X, int Y);
+    void kmclick ();
 
 
     inline std::string FindPort(const std::string& targetDescription) {

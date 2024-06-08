@@ -14,13 +14,8 @@
 void aimbot()
 {
     if (!cache::closest_mesh || !is_visible(cache::closest_mesh)) return;
-
-    Vector2 target = { 0, 0 };
     if ((cache::head2d.x != 0 && cache::head2d.y != 0) || (cache::neck2d.x != 0 && cache::neck2d.y != 0))
     {
-        float screen_center_x = settings::screen_center_x;
-        float screen_center_y = settings::screen_center_y;
-        float smoothness = settings::aimbot::smoothness;
 
         if (settings::kmbox::kmboxnet && settings::aimbot::enable)
         {
@@ -33,6 +28,21 @@ void aimbot()
     }
 }
 
+bool is_target_visible()
+{
+    if (is_visible(cache::closest_mesh & cache::overlapping))
+    {
+        float dx = cache::head2d.x - settings::screen_center_x;
+        float dy = cache::head2d.y - settings::screen_center_y;
+        float head_dist_to_center = sqrtf(dx * dx + dy * dy);
+        float threshold = 1.0f; // Adjust this value as needed
+        if (settings::aimbot::triggerbot && head_dist_to_center <= threshold)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 void game_loop()
 {
     cache::base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
@@ -54,6 +64,7 @@ void game_loop()
     cache::game_state = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_STATE);
     cache::player_array = mem.Read<uintptr_t>(cache::game_state + offsets::PLAYER_ARRAY);
     cache::player_count = mem.Read<int>(cache::game_state + (offsets::PLAYER_ARRAY + sizeof(uintptr_t)));
+    cache::overlapping = mem.Read<bool>(offsets::ACTOR + 0x1b10);
 
     cache::closest_distance = FLT_MAX;
     cache::closest_mesh = NULL;
@@ -82,7 +93,6 @@ void game_loop()
         float distance = cache::relative_location.distance(bottom3d) / 100.0f;
         Vector3 Predictor = Prediction(head3d, Velocity, distance, settings::aimbot::scaledProjectileSpeed);
         Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
-
         if (settings::visuals::enable)
         {
             ImColor box_color = is_visible(mesh)
@@ -125,12 +135,15 @@ void game_loop()
             cache::neck2d = neck2d;
             cache::hitbox_screen_predict = hitbox_screen_predict;
         }
-    }
-
-    if (settings::aimbot::enable && cache::closest_mesh)
-    {
-        aimbot();
-    }
+        if (settings::aimbot::enable && cache::closest_mesh && is_target_visible())
+        {
+            aimbot();
+            if (is_target_visible())
+            {
+                kmBox::kmclick();
+            }
+            }
+        }
 }
 
 WPARAM render_loop()

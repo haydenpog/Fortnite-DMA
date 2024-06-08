@@ -11,6 +11,7 @@ namespace settings
 	namespace aimbot
 	{
 		inline bool enable = false;
+		inline bool triggerbot = false;
 		inline bool show_fov = false;
 		inline float fov = 150;
 		inline float smoothness = 5;

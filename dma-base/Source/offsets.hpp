@@ -14,6 +14,7 @@ namespace offsets {
 	inline int PLAYER_ARRAY = 0x2A8;
 	inline int VELOCITY = 0x168;
 	inline int MESH = 0x318;
+	inline int ACTOR = 0xA0;
 	inline int COMPONENT_TO_WORLD = 0x1C0;
 	inline int BONE_ARRAY = 0x5B8;
 	inline int BONE_ARRAY_CACHE = 0x5E8;
