@@ -1,5 +1,4 @@
-﻿#pragma once
-#include <Pch.h>
+﻿#include <Pch.h>
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx9.h"
 #include "imgui/imgui_impl_win32.h"
@@ -70,8 +69,8 @@ void game_loop()
         uintptr_t mesh = mem.Read<uintptr_t>(pawn_private + offsets::MESH);
         if (!mesh) continue;
 
-        Vector3 head3d = get_entity_bone(mesh, bone::HumanHead);
-        Vector3 neck3d = get_entity_bone(mesh, bone::HumanLowerHead);
+        Vector3 head3d = get_entity_bone(mesh, bone::BONE_HEAD);
+        Vector3 neck3d = get_entity_bone(mesh, bone::BONE_LOWERHEAD);
         Vector2 head2d = project_world_to_screen(head3d);
         Vector2 neck2d = project_world_to_screen(neck3d);
         Vector3 bottom3d = get_entity_bone(mesh, 0);

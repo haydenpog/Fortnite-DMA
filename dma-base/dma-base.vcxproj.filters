@@ -45,7 +45,7 @@
     <ClCompile Include="Include\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\kmboxNet.cpp">
+    <ClCompile Include="Source\Kmbox\kmboxNet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -377,7 +377,7 @@
     <ClInclude Include="Include\json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\game.hpp">
+    <ClInclude Include="Source\game\game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\offsets.hpp">
@@ -437,19 +437,22 @@
     <ClInclude Include="Source\Kmbox\kmboxb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\kmbox.hpp">
+    <ClInclude Include="Source\Kmbox\kmbox.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\kmboxNet.h">
+    <ClInclude Include="Source\Kmbox\kmboxNet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\HidTable.h">
+    <ClInclude Include="Source\Kmbox\HidTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\render.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Images\image.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\game.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
