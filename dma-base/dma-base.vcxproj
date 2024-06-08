@@ -101,8 +101,10 @@
     <ClInclude Include="Include\imgui\imstb_rectpack.h" />
     <ClInclude Include="Include\imgui\imstb_textedit.h" />
     <ClInclude Include="Include\imgui\imstb_truetype.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Source\Config.h" />
     <ClInclude Include="Source\HidTable.h" />
+    <ClInclude Include="Source\Images\image.hpp" />
     <ClInclude Include="Source\kmbox.hpp" />
     <ClInclude Include="Source\kmboxNet.h" />
     <ClInclude Include="Source\Kmbox\excluded.h" />
@@ -231,6 +233,12 @@
     <Library Include="Lib\FTD3XX.lib" />
     <Library Include="Lib\leechcore.lib" />
     <Library Include="Lib\vmm.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="dma-base.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\Downloads\Untitled_1_.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -14,6 +14,7 @@ namespace settings
 		inline bool show_fov = false;
 		inline float fov = 150;
 		inline float smoothness = 5;
+		bool prediction = false;
 	}
 	
 	namespace visuals
@@ -27,6 +28,8 @@ namespace settings
 		inline bool line = false;
 		inline bool distance = false;
 		inline bool fps = false;
+		inline bool skeleton = false;
+		inline int skeleton_thick = 1.5f;
 		bool vsync = true;
 		int fps_limit = 60;
 

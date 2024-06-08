@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <Pch.h>
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx9.h"
@@ -15,10 +15,8 @@
 void aimbot(uintptr_t target_mesh)
 {
     if (!target_mesh || !is_visible(target_mesh)) return;
-
     Vector3 head3d = get_entity_bone(target_mesh, 110);
     Vector2 head2d = project_world_to_screen(head3d);
-
     Vector2 target = { 0, 0 };
     if (head2d.x != 0 && head2d.y != 0)
     {
@@ -39,7 +37,6 @@ void aimbot(uintptr_t target_mesh)
         }
     }
 }
-
 
 void game_loop()
 {
@@ -109,6 +106,10 @@ void game_loop()
             if (settings::visuals::line)
             {
                 draw_line(bottom2d, box_color);
+            }
+            if (settings::visuals::skeleton)
+            {
+                skeleton(mesh, box_color);
             }
             if (settings::visuals::distance)
             {

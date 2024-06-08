@@ -111,6 +111,45 @@ void draw_distance(Vector2 location, float distance, const ImColor color)
     ImGui::GetForegroundDrawList()->AddText(ImVec2(location.x - text_size.x / 2, location.y - text_size.y / 2), color, dist);
 }
 
+void skeleton(uintptr_t skeleton_mesh, const ImColor color)
+{
+    if (!skeleton_mesh || settings::visuals::skeleton) {
+
+        auto neck = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_HEAD));
+        auto chest = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_NECK));
+        auto left_shoulder = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_LSHOULDER));
+        auto left_elbow = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_LELBOW));
+        auto left_hand = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_LHAND));
+        auto right_shoulder = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_RSHOULDER));
+        auto right_elbow = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_RELBOW));
+        auto right_hand = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_RHAND));
+        auto pelvis = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_PELVIS));
+        auto left_hip = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_LTHIGH));
+        auto left_knee = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_LKNEE));
+        auto left_foot = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_LFOOT));
+        auto right_hip = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_RTHIGH));
+        auto right_knee = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_RKNEE));
+        auto right_foot = project_world_to_screen(get_entity_bone(skeleton_mesh, perfect_skeleton::BONE_RFOOT));
+
+        if (settings::visuals::skeleton) {
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(neck.x, neck.y), ImVec2(chest.x, chest.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(chest.x, chest.y), ImVec2(right_shoulder.x, right_shoulder.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(left_shoulder.x, left_shoulder.y), ImVec2(chest.x, chest.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(left_shoulder.x, left_shoulder.y), ImVec2(left_elbow.x, left_elbow.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(left_elbow.x, left_elbow.y), ImVec2(left_hand.x, left_hand.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(right_shoulder.x, right_shoulder.y), ImVec2(right_elbow.x, right_elbow.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(right_elbow.x, right_elbow.y), ImVec2(right_hand.x, right_hand.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(chest.x, chest.y), ImVec2(pelvis.x, pelvis.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(pelvis.x, pelvis.y), ImVec2(left_hip.x, left_hip.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(left_hip.x, left_hip.y), ImVec2(left_knee.x, left_knee.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(left_knee.x, left_knee.y), ImVec2(left_foot.x, left_foot.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(pelvis.x, pelvis.y), ImVec2(right_hip.x, right_hip.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(right_hip.x, right_hip.y), ImVec2(right_knee.x, right_knee.y), color, settings::visuals::skeleton_thick + 2.5);
+            ImGui::GetBackgroundDrawList()->AddLine(ImVec2(right_knee.x, right_knee.y), ImVec2(right_foot.x, right_foot.y), color, settings::visuals::skeleton_thick + 2.5);
+        }
+    }
+}
+
 void render_menu()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -139,7 +178,7 @@ void render_menu()
     if (settings::show_menu)
     {
         ImGui::SetNextWindowSize({ 620, 350 });
-        ImGui::Begin("Fortnite", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+        ImGui::Begin("Jouh", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
         if (ImGui::Button("Aimbot", { 196, 20 })) settings::tab = 0;
         ImGui::SameLine();
         if (ImGui::Button("Visuals", { 196, 20 })) settings::tab = 1;
@@ -197,6 +236,7 @@ void render_menu()
                 ImGui::ColorEdit4("Non-Visible", settings::visuals::boxColor2);
             }
             ImGui::Checkbox("Fill Box", &settings::visuals::fill_box);
+            ImGui::Checkbox("skeleton", &settings::visuals::skeleton);
             ImGui::Checkbox("Line", &settings::visuals::line);
             ImGui::Checkbox("Distance", &settings::visuals::distance);
             break;
