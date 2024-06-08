@@ -2,6 +2,14 @@ FORTNITE DMA
 _______________________________________________________________________
 New change log in discord
 https://discord.gg/REe2G5AwWh
+6/8/2024 
+
+[+] Added Skeleton
+
+[+] Added aimbot prediction
+
+[+] Fixed previous aimbot intense shaking
+
 
 6/7/2024 
 
