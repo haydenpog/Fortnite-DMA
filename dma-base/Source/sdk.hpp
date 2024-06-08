@@ -320,7 +320,59 @@ Vector3 Prediction(Vector3 TargetPosition, Vector3 ComponentVelocity, float play
 		TargetPosition.y + TimeToTarget * ComponentVelocity.y,
 		TargetPosition.z + TimeToTarget * ComponentVelocity.z + bulletDrop
 		};
+
 }
 
+auto cursor_to(float x, float y) -> void {
+	float screen_center_x = settings::screen_center_x;
+	float screen_center_y = settings::screen_center_y;
+	Vector3 target(0, 0, 0);
 
+	if (x != 0) {
+		if (x > screen_center_x) {
+			target.x = -(screen_center_x - x);
+			target.x /= (settings::aimbot::smoothness);
+			if (target.x + screen_center_x > screen_center_x * 2)
+				target.x = 0;
+		}
 
+		if (x < screen_center_x) {
+			target.x = x - screen_center_x;
+			target.x /= (settings::aimbot::smoothness);
+			if (target.x + screen_center_x < 0)
+				target.x = 0;
+		}
+	}
+	if (y != 0) {
+		if (y > settings::screen_center_y) {
+			target.y = -(settings::screen_center_y - y);
+			target.y /= (settings::aimbot::smoothness);
+			if (target.y + settings::screen_center_y > settings::screen_center_y * 2)
+				target.y = 0;
+		}
+
+		if (y < settings::screen_center_y) {
+			target.y = y - settings::screen_center_y;
+			target.y /= (settings::aimbot::smoothness);
+			if (target.y + settings::screen_center_y < 0)
+				target.y = 0;
+		}
+	}
+
+	const float snapThreshold = 1.0f;
+	if (std::abs(target.x) < snapThreshold) {
+		target.x = 0;
+	}
+	if (std::abs(target.y) < snapThreshold) {
+		target.y = 0;
+	}
+	if (settings::kmbox::kmboxnet && settings::aimbot::enable)
+	{
+		kmNet_mouse_move(target.x, target.y);
+	}
+	if (settings::kmbox::kmboxb && settings::aimbot::enable)
+	{
+		kmBox::sendMove(target.x, target.y);
+	}
+
+}
