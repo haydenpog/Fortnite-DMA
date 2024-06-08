@@ -11,45 +11,13 @@
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "dwmapi.lib")
 
-/*
-void aimbot(uintptr_t target_mesh)
+
+void aimbot()
 {
-    if (!target_mesh || !is_visible(target_mesh)) return;
-    Vector3 head3d = get_entity_bone(target_mesh, 110);
-    Vector2 head2d = project_world_to_screen(head3d);
-    Vector2 target = { 0, 0 };
-    if (head2d.x != 0 && head2d.y != 0)
-    {
-        float screen_center_x = settings::screen_center_x;
-        float screen_center_y = settings::screen_center_y;
-        float smoothness = settings::aimbot::smoothness;
-        target.x = (head2d.x - screen_center_x) / smoothness;
-        target.y = (head2d.y - screen_center_y) / smoothness;
-        if (settings::kmbox::kmboxnet && settings::aimbot::enable)
-        {
-            kmNet_mouse_move(target.x, target.y);
-        }
-        if (settings::kmbox::kmboxb && settings::aimbot::enable)
-        {
-            kmBox::sendMove(target.x, target.y);
-        }
-    }
-}
-*/
-void aimbot(uintptr_t target_mesh)
-{
-    if (!target_mesh || !is_visible(target_mesh)) return;
-    Vector3 head3d = get_entity_bone(target_mesh, bone::HumanHead);
-    Vector2 head2d = project_world_to_screen(head3d);
-    auto enity = mem.Read<uintptr_t>(cache::closest_mesh + offsets::ROOT_COMPONENT);
-    Vector3 Velocity = mem.Read<Vector3>(enity + 0x168);
-    float projectileSpeed = 60000;
-    float distance = cache::relative_location.distance(head3d) / 100.0f;
-    Vector3 Predictor = Prediction(head3d, Velocity, distance, projectileSpeed);
-    Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
+    if (!cache::closest_mesh || !is_visible(cache::closest_mesh)) return;
 
     Vector2 target = { 0, 0 };
-    if (head2d.x != 0 && head2d.y != 0)
+    if ((cache::head2d.x != 0 && cache::head2d.y != 0) || (cache::neck2d.x != 0 && cache::neck2d.y != 0))
     {
         float screen_center_x = settings::screen_center_x;
         float screen_center_y = settings::screen_center_y;
@@ -57,11 +25,11 @@ void aimbot(uintptr_t target_mesh)
 
         if (settings::kmbox::kmboxnet && settings::aimbot::enable)
         {
-            cursor_to(hitbox_screen_predict.x, hitbox_screen_predict.y);
+            move(cache::hitbox_screen_predict.x, cache::hitbox_screen_predict.y);
         }
         if (settings::kmbox::kmboxb && settings::aimbot::enable)
         {
-            cursor_to(hitbox_screen_predict.x, hitbox_screen_predict.y);
+            move(cache::hitbox_screen_predict.x, cache::hitbox_screen_predict.y);
         }
     }
 }
@@ -102,18 +70,18 @@ void game_loop()
         uintptr_t mesh = mem.Read<uintptr_t>(pawn_private + offsets::MESH);
         if (!mesh) continue;
 
-        Vector3 head3d = get_entity_bone(mesh, perfect_skeleton::BONE_HEAD);
+        Vector3 head3d = get_entity_bone(mesh, bone::HumanHead);
+        Vector3 neck3d = get_entity_bone(mesh, bone::HumanLowerHead);
         Vector2 head2d = project_world_to_screen(head3d);
+        Vector2 neck2d = project_world_to_screen(neck3d);
         Vector3 bottom3d = get_entity_bone(mesh, 0);
         Vector2 bottom2d = project_world_to_screen(bottom3d);
-        auto enity = mem.Read<uintptr_t>(cache::closest_mesh + offsets::ROOT_COMPONENT);
-        Vector3 Velocity = mem.Read<Vector3>(enity + 0x168);
-        float projectileSpeed = 60000;
+        Vector3 Velocity = mem.Read<Vector3>(mesh + offsets::VELOCITY);
 
         int box_height = abs(head2d.y - bottom2d.y);
         int box_width = static_cast<int>(box_height * 0.50f);
         float distance = cache::relative_location.distance(bottom3d) / 100.0f;
-        Vector3 Predictor = Prediction(head3d, Velocity, distance, projectileSpeed);
+        Vector3 Predictor = Prediction(head3d, Velocity, distance, settings::aimbot::scaledProjectileSpeed);
         Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
 
         if (settings::visuals::enable)
@@ -154,11 +122,15 @@ void game_loop()
         {
             cache::closest_distance = dist;
             cache::closest_mesh = mesh;
+            cache::head2d = head2d;
+            cache::neck2d = neck2d;
+            cache::hitbox_screen_predict = hitbox_screen_predict;
         }
-        if (settings::aimbot::enable)
-        {
-            aimbot(cache::closest_mesh);
-        }
+    }
+
+    if (settings::aimbot::enable && cache::closest_mesh)
+    {
+        aimbot();
     }
 }
 

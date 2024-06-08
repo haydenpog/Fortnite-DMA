@@ -223,6 +223,9 @@ namespace cache
 	inline uintptr_t closest_mesh;
 	inline Camera local_camera;
 	inline uintptr_t base;
+	inline Vector2 head2d;
+	inline Vector2 neck2d;
+	inline Vector2 hitbox_screen_predict;
 }
 
 Camera get_view_point()
@@ -323,7 +326,7 @@ Vector3 Prediction(Vector3 TargetPosition, Vector3 ComponentVelocity, float play
 
 }
 
-auto cursor_to(float x, float y) -> void {
+auto move(float x, float y) -> void {
 	float screen_center_x = settings::screen_center_x;
 	float screen_center_y = settings::screen_center_y;
 	Vector3 target(0, 0, 0);

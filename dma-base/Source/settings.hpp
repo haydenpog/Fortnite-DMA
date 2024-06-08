@@ -17,6 +17,8 @@ namespace settings
 		inline bool prediction = false;
 		inline bool headbone = false;
 		inline bool chestbone = false;
+		float projectileSpeed = 60;
+		float scaledProjectileSpeed = 60000.0f;
 	}
 	
 	namespace visuals
