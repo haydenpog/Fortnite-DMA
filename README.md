@@ -8,7 +8,7 @@ https://discord.gg/REe2G5AwWh
 
 [+] Added aimbot prediction
 
-[+] Fixed previous aimbot intense shaking
+[+] Fixed aimbot intense shaking
 
 
 6/7/2024 
