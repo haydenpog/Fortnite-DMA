@@ -3,7 +3,7 @@
 
 int main()
 {
-    SetConsoleTitleA("Jouh DMA");
+    SetConsoleTitleA("Jouaaaaaah DMA");
     if (!mem.Init("FortniteClient-Win64-Shipping.exe", true, true))
     {
         std::cout << "Failed to initialize DMA" << std::endl;
