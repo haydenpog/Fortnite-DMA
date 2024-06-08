@@ -200,9 +200,9 @@ void render_menu()
                 }
                 if (settings::kmbox::kmboxb)
                 {
-                    ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
-                    ImGui::SliderFloat("Projectile Speed", &settings::aimbot::projectileSpeed, 10.0f, 100.0f);
                     settings::aimbot::scaledProjectileSpeed = settings::aimbot::projectileSpeed * 1000.0f;
+                    ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
+                    ImGui::SliderFloat("Prediction Speed", &settings::aimbot::projectileSpeed, 10.0f, 100.0f);
                     ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
                     ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
                 }
@@ -221,6 +221,7 @@ void render_menu()
                     }
                     if (settings::kmbox::kmboxnet)
                     {
+                        ImGui::SliderFloat("Prediction Speed", &settings::aimbot::projectileSpeed, 10.0f, 100.0f);
                         ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
                         ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
                         ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
