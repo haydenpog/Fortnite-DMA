@@ -155,13 +155,16 @@ namespace cache
 	inline float closest_distance;
 	inline uintptr_t closest_mesh;
 	inline Camera local_camera;
+	inline uintptr_t base;
 }
 
 Camera get_view_point()
 {
 	Camera view_point{};
-	uintptr_t location_pointer = mem.Read<uintptr_t>(cache::uworld + 0x110);
-	uintptr_t rotation_pointer = mem.Read<uintptr_t>(cache::uworld + 0x120);
+	uintptr_t location_pointer;
+	uintptr_t rotation_pointer;
+	location_pointer = mem.Read<uintptr_t>(cache::uworld + 0x110);
+	rotation_pointer = mem.Read<uintptr_t>(cache::uworld + 0x120);
 	FNRot fnrot{};
 	fnrot.a = mem.Read<double>(rotation_pointer);
 	fnrot.b = mem.Read<double>(rotation_pointer + 0x20);
@@ -188,18 +191,18 @@ Vector2 project_world_to_screen(Vector3 world_location)
 
 Vector3 get_entity_bone(uintptr_t mesh, int bone_id)
 {
-	uintptr_t bone_array = mem.Read<uintptr_t>(mesh + BONE_ARRAY);
-	if (bone_array == 0) bone_array = mem.Read<uintptr_t>(mesh + BONE_ARRAY_CACHE);
+	uintptr_t bone_array = mem.Read<uintptr_t>(mesh + offsets::BONE_ARRAY);
+	if (bone_array == 0) bone_array = mem.Read<uintptr_t>(mesh + offsets::BONE_ARRAY_CACHE);
 	FTransform bone = mem.Read<FTransform>(bone_array + (bone_id * 0x60));
-	FTransform component_to_world = mem.Read<FTransform>(mesh + COMPONENT_TO_WORLD);
+	FTransform component_to_world = mem.Read<FTransform>(mesh + offsets::COMPONENT_TO_WORLD);
 	D3DMATRIX matrix = matrix_multiplication(bone.to_matrix_with_scale(), component_to_world.to_matrix_with_scale());
 	return Vector3(matrix._41, matrix._42, matrix._43);
 }
 
 bool is_visible(uintptr_t mesh)
 {
-	float last_sumbit_time = mem.Read<float>(mesh + LAST_SUMBIT_TIME);
-	float last_render_time_on_screen = mem.Read<float>(mesh + LAST_SUMBIT_TIME_ON_SCREEN);
+	float last_sumbit_time = mem.Read<float>(mesh + offsets::LAST_SUMBIT_TIME);
+	float last_render_time_on_screen = mem.Read<float>(mesh + offsets::LAST_SUMBIT_TIME_ON_SCREEN);
 	return last_render_time_on_screen + 0.06f >= last_sumbit_time;
 }
 bool kmBox::init()

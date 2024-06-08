@@ -446,6 +446,9 @@
     <ClInclude Include="Source\HidTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\render.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Lib\FTD3XX.lib" />
