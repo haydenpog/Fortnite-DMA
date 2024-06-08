@@ -5,6 +5,8 @@ https://discord.gg/REe2G5AwWh
 
 6/7/2024 
 
+[+] Added Skeleton
+
 [+] UI Change up, more streamlined
 
 [+] Fixed fill box and added color selector for fill box
