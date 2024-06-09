@@ -77,7 +77,7 @@ void create_overlay()
         wcex.hInstance, nullptr
     );
 
-    SetWindowLong(my_wnd, WS_EX_TOOLWINDOW, WS_EX_LAYERED | WS_EX_TOOLWINDOW);
+    SetWindowLong(my_wnd, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW);
     SetLayeredWindowAttributes(my_wnd, RGB(0, 0, 0), 255, LWA_ALPHA);
     MARGINS margin = { -1 };
     DwmExtendFrameIntoClientArea(my_wnd, &margin);
@@ -111,6 +111,7 @@ void draw_distance(const Vector2& location, float distance, const ImColor color)
 void skeleton(uintptr_t skeleton_mesh, const ImColor color)
 {
     if (!skeleton_mesh || !settings::visuals::skeleton) return;
+
     auto neck = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_HEAD));
     auto chest = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_NECK));
     auto left_shoulder = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LSHOULDER));
@@ -146,115 +147,8 @@ void skeleton(uintptr_t skeleton_mesh, const ImColor color)
     draw_list->AddLine(ImVec2(right_knee.x, right_knee.y), ImVec2(right_foot.x, right_foot.y), color, thickness);
 }
 
-void KmboxDetailsPopup()
-{
-    if (settings::kmbox::show_kmbox_details_popup)
-    {
-        ImGui::OpenPopup("Kmbox Details");
-    }
-
-    if (ImGui::BeginPopupModal("Kmbox Details", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-
-        ImGui::Text("Enter Kmbox IP:");
-        ImGui::InputText("##KmboxIp", settings::kmbox::kmbox_ip, IM_ARRAYSIZE(settings::kmbox::kmbox_ip));
-
-        ImGui::Text("Enter Kmbox Port:");
-        ImGui::InputText("##KmboxPort", settings::kmbox::kmbox_port, IM_ARRAYSIZE(settings::kmbox::kmbox_port));
-
-        ImGui::Text("Enter Kmbox UUID:");
-        ImGui::InputText("##KmboxUUID", settings::kmbox::kmbox_uuid, IM_ARRAYSIZE(settings::kmbox::kmbox_uuid));
-
-        if (ImGui::Button("OK", ImVec2(120, 0)))
-        {
-            ImGui::EndPopup();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(120, 0)))
-        {
-            ImGui::EndPopup();
-        }
-        ImGui::EndPopup();
-    }
-}
-
-void case0()
-{
-    ImGui::Checkbox("Enable Aimbot", &settings::aimbot::enable);
-    if (settings::aimbot::enable)
-    {
-        if (ImGui::Checkbox("Kmbox B+", &settings::kmbox::kmboxb))
-        {
-            if (!kmBox::init())
-            {
-                settings::kmbox::kmboxb = false;
-            }
-        }
-
-        bool kmboxnet = ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet);
-        bool kmboxNetInitSuccess = false;
-        if (settings::kmbox::kmboxnet || kmboxnet)
-        {
-            if (ImGui::Button("Enter Kmbox Details"))
-            {
-                settings::kmbox::show_kmbox_details_popup = true;
-            }
-            KmboxDetailsPopup();
-
-            if (ImGui::Button("Connect to Kmbox .NET"))
-            {
-                if (!kmNet_init(settings::kmbox::kmbox_ip, settings::kmbox::kmbox_port, settings::kmbox::kmbox_uuid))
-                {
-                    settings::kmbox::kmboxnet = false;
-                }
-                else
-                {
-                    kmboxNetInitSuccess = true;
-                }
-            }
-        }
-
-        if ((settings::kmbox::kmboxb) || (settings::kmbox::kmboxnet && kmboxNetInitSuccess))
-        {
-            settings::aimbot::scaledProjectileSpeed = settings::aimbot::projectileSpeed * 1000.0f;
-            ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
-            ImGui::Checkbox("Triggerbot", &settings::aimbot::triggerbot);
-            ImGui::SliderFloat("Prediction Speed", &settings::aimbot::projectileSpeed, 10.0f, 100.0f);
-            ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
-            ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
-        }
-    }
-}
-
-
-void case1()
-{
-    ImGui::Checkbox("Enable", &settings::visuals::enable);
-    ImGui::Checkbox("Box", &settings::visuals::box);
-    if (settings::visuals::box)
-    {
-        ImGui::ColorEdit4("Visible", settings::visuals::boxColor);
-        ImGui::ColorEdit4("Non-Visible", settings::visuals::boxColor2);
-    }
-    ImGui::Checkbox("Fill Box", &settings::visuals::fill_box);
-    ImGui::Checkbox("Skeleton", &settings::visuals::skeleton);
-    ImGui::Checkbox("Line", &settings::visuals::line);
-    ImGui::Checkbox("Distance", &settings::visuals::distance);
-}
-
-void case2()
-{
-    ImGui::Checkbox("FPS", &settings::visuals::fps);
-    if (settings::visuals::fps)
-    {
-        ImGui::SliderInt("FPS Limit", &settings::visuals::fps_limit, 30, 240);
-    }
-    if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
-}
-
 void render_menu()
 {
-
     ImGuiIO& io = ImGui::GetIO();
     auto current_time = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_time);
@@ -278,13 +172,14 @@ void render_menu()
         ImGui::End();
     }
 
+    if (settings::aimbot::show_fov)
+    {
+        ImGui::GetForegroundDrawList()->AddCircle(ImVec2(io.DisplaySize.x / 2, io.DisplaySize.y / 2), settings::aimbot::fov, ImColor(250, 250, 250, 250), 100, 1.0f);
+    }
+
     if (GetAsyncKeyState(VK_INSERT) & 1)
     {
         settings::show_menu = !settings::show_menu;
-    }
-
-    if (settings::aimbot::show_fov) {
-        ImGui::GetForegroundDrawList()->AddCircle(ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2), settings::aimbot::fov, ImColor(250, 250, 250, 250), 100, 1.0f);
     }
 
     if (settings::show_menu)
@@ -301,15 +196,70 @@ void render_menu()
         switch (settings::tab)
         {
         case 0:
-            case0();
+            ImGui::Checkbox("Enable Aimbot", &settings::aimbot::enable);
+            if (settings::aimbot::enable)
+            {
+                if (ImGui::Checkbox("Kmbox B+", &settings::kmbox::kmboxb))
+                {
+                    if (!kmBox::init())
+                    {
+                        settings::kmbox::kmboxb = false;
+                    }
+                }
+                if (settings::kmbox::kmboxb)
+                {
+                    settings::aimbot::scaledProjectileSpeed = settings::aimbot::projectileSpeed * 1000.0f;
+                    ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
+                    ImGui::Checkbox("Triggerbot", &settings::aimbot::triggerbot);
+                    ImGui::SliderFloat("Prediction Speed", &settings::aimbot::projectileSpeed, 10.0f, 100.0f);
+                    ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
+                    ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
+                }
+                ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet);
+                if (settings::kmbox::kmboxnet)
+                {
+                    ImGui::InputText("Kmbox IP", settings::kmbox::KmboxIp, IM_ARRAYSIZE(settings::kmbox::KmboxIp));
+                    ImGui::InputText("Kmbox Port", settings::kmbox::KmboxPort, IM_ARRAYSIZE(settings::kmbox::KmboxPort));
+                    ImGui::InputText("Kmbox UUID", settings::kmbox::KmboxUUID, IM_ARRAYSIZE(settings::kmbox::KmboxUUID));
+                    if (ImGui::Button("Connect to Kmbox .NET"))
+                    {
+                        if (!kmNet_init(settings::kmbox::KmboxIp, settings::kmbox::KmboxPort, settings::kmbox::KmboxUUID))
+                        {
+                            settings::kmbox::kmboxnet = false;
+                        }
+                    }
+                    if (settings::kmbox::kmboxnet)
+                    {
+                        ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
+                        ImGui::SliderFloat("Prediction Speed", &settings::aimbot::projectileSpeed, 10.0f, 100.0f);
+                        ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
+                        ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
+                    }
+                }
+            }
             break;
 
         case 1:
-            case1();
+            ImGui::Checkbox("Enable", &settings::visuals::enable);
+            ImGui::Checkbox("Box", &settings::visuals::box);
+            if (settings::visuals::box)
+            {
+                ImGui::ColorEdit4("Visible", settings::visuals::boxColor);
+                ImGui::ColorEdit4("Non-Visible", settings::visuals::boxColor2);
+            }
+            ImGui::Checkbox("Fill Box", &settings::visuals::fill_box);
+            ImGui::Checkbox("Skeleton", &settings::visuals::skeleton);
+            ImGui::Checkbox("Line", &settings::visuals::line);
+            ImGui::Checkbox("Distance", &settings::visuals::distance);
             break;
 
         case 2:
-            case2();
+            ImGui::Checkbox("FPS", &settings::visuals::fps);
+            if (settings::visuals::fps)
+            {
+                ImGui::SliderInt("FPS Limit", &settings::visuals::fps_limit, 30, 240);
+            }
+            if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
             break;
         }
         ImGui::End();

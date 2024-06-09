@@ -104,7 +104,6 @@ void game_loop()
                 draw_distance(bottom2d, distance, ImColor(250, 250, 250, 250));
             }
         }
-
         float dx = head2d.x - settings::screen_center_x;
         float dy = head2d.y - settings::screen_center_y;
         float dist = sqrtf(dx * dx + dy * dy);
@@ -116,11 +115,10 @@ void game_loop()
             cache::neck2d = neck2d;
             cache::hitbox_screen_predict = hitbox_screen_predict;
         }
-
-        if (settings::aimbot::enable && cache::closest_mesh)
-        {
-            aimbot();
-        }
+    }
+    if (settings::aimbot::enable && cache::closest_mesh)
+    {
+        aimbot();
     }
 }
 
@@ -177,4 +175,6 @@ bool init()
     create_overlay();
     return SUCCEEDED(directx_init());
 }
+
+
 

@@ -44,11 +44,10 @@ namespace settings
 	{
 		inline bool kmboxb = false;
 		inline bool kmboxnet = false;
-		static char kmbox_ip[64] = "";
-		static char kmbox_port[16] = "";
-		static char kmbox_uuid[64] = "";
-		bool show_kmbox_details_popup = false;
-
+		inline bool confirm = false;
+		char KmboxIp[128] = "";
+		char KmboxPort[128] = "";
+		char KmboxUUID[128] = "";
 	}
 }
 
