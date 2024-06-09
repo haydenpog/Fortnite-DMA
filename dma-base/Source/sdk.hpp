@@ -253,6 +253,10 @@ bool is_visible(uintptr_t mesh) {
     return last_render_time_on_screen + 0.06f >= last_submit_time;
 }
 
+ImGuiIO& io = ImGui::GetIO();
+auto current_time = std::chrono::high_resolution_clock::now();
+auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_time);
+
 bool kmBox::init() {
     std::string port = kmBox::FindPort("USB-SERIAL CH340");
     if (port.empty()) {
@@ -343,3 +347,5 @@ void move(float x, float y) {
         kmBox::sendMove(static_cast<int>(target.x), static_cast<int>(target.y));
     }
 }
+
+
