@@ -14,9 +14,12 @@
 void aimbot()
 {
     if (!cache::closest_mesh || !is_visible(cache::closest_mesh)) return;
+    Vector2 target = { 0, 0 };
     if ((cache::head2d.x != 0 && cache::head2d.y != 0) || (cache::neck2d.x != 0 && cache::neck2d.y != 0))
     {
-
+        float screen_center_x = settings::screen_center_x;
+        float screen_center_y = settings::screen_center_y;
+        float smoothness = settings::aimbot::smoothness;
         if (settings::kmbox::kmboxnet && settings::aimbot::enable)
         {
             move(cache::hitbox_screen_predict.x, cache::hitbox_screen_predict.y);
@@ -28,21 +31,6 @@ void aimbot()
     }
 }
 
-bool is_target_visible()
-{
-    if (is_visible(cache::closest_mesh & cache::overlapping))
-    {
-        float dx = cache::head2d.x - settings::screen_center_x;
-        float dy = cache::head2d.y - settings::screen_center_y;
-        float head_dist_to_center = sqrtf(dx * dx + dy * dy);
-        float threshold = 1.0f; // Adjust this value as needed
-        if (settings::aimbot::triggerbot && head_dist_to_center <= threshold)
-        {
-            return true;
-        }
-    }
-    return false;
-}
 void game_loop()
 {
     cache::base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
@@ -52,7 +40,6 @@ void game_loop()
     cache::local_players = mem.Read<uintptr_t>(mem.Read<uintptr_t>(cache::game_instance + offsets::LOCAL_PLAYERS));
     cache::player_controller = mem.Read<uintptr_t>(cache::local_players + offsets::PLAYER_CONTROLLER);
     cache::local_pawn = mem.Read<uintptr_t>(cache::player_controller + offsets::LOCAL_PAWN);
-
     if (cache::local_pawn)
     {
         cache::root_component = mem.Read<uintptr_t>(cache::local_pawn + offsets::ROOT_COMPONENT);
@@ -60,15 +47,11 @@ void game_loop()
         cache::player_state = mem.Read<uintptr_t>(cache::local_pawn + offsets::PLAYER_STATE);
         cache::my_team_id = mem.Read<int>(cache::player_state + offsets::TEAM_INDEX);
     }
-
     cache::game_state = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_STATE);
     cache::player_array = mem.Read<uintptr_t>(cache::game_state + offsets::PLAYER_ARRAY);
     cache::player_count = mem.Read<int>(cache::game_state + (offsets::PLAYER_ARRAY + sizeof(uintptr_t)));
-    cache::overlapping = mem.Read<bool>(offsets::ACTOR + 0x1b10);
-
     cache::closest_distance = FLT_MAX;
     cache::closest_mesh = NULL;
-
     for (int i = 0; i < cache::player_count; i++)
     {
         uintptr_t player_state = mem.Read<uintptr_t>(cache::player_array + (i * sizeof(uintptr_t)));
@@ -87,18 +70,17 @@ void game_loop()
         Vector3 bottom3d = get_entity_bone(mesh, 0);
         Vector2 bottom2d = project_world_to_screen(bottom3d);
         Vector3 Velocity = mem.Read<Vector3>(mesh + offsets::VELOCITY);
-
         int box_height = abs(head2d.y - bottom2d.y);
         int box_width = static_cast<int>(box_height * 0.50f);
         float distance = cache::relative_location.distance(bottom3d) / 100.0f;
         Vector3 Predictor = Prediction(head3d, Velocity, distance, settings::aimbot::scaledProjectileSpeed);
         Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
+
         if (settings::visuals::enable)
         {
             ImColor box_color = is_visible(mesh)
                 ? ImColor(settings::visuals::boxColor[0], settings::visuals::boxColor[1], settings::visuals::boxColor[2], settings::visuals::boxColor[3])
                 : ImColor(settings::visuals::boxColor2[0], settings::visuals::boxColor2[1], settings::visuals::boxColor2[2], settings::visuals::boxColor2[3]);
-
             if (settings::visuals::box)
             {
                 draw_cornered_box(head2d.x - (box_width / 2), head2d.y, box_width, box_height, box_color, 1);
@@ -122,11 +104,9 @@ void game_loop()
                 draw_distance(bottom2d, distance, ImColor(250, 250, 250, 250));
             }
         }
-
         float dx = head2d.x - settings::screen_center_x;
         float dy = head2d.y - settings::screen_center_y;
         float dist = sqrtf(dx * dx + dy * dy);
-
         if (dist <= settings::aimbot::fov && dist < cache::closest_distance)
         {
             cache::closest_distance = dist;
@@ -135,15 +115,11 @@ void game_loop()
             cache::neck2d = neck2d;
             cache::hitbox_screen_predict = hitbox_screen_predict;
         }
-        if (settings::aimbot::enable && cache::closest_mesh && is_target_visible())
-        {
-            aimbot();
-            if (is_target_visible())
-            {
-                kmBox::kmclick();
-            }
-            }
-        }
+    }
+    if (settings::aimbot::enable && cache::closest_mesh)
+    {
+        aimbot();
+    }
 }
 
 WPARAM render_loop()
@@ -199,3 +175,6 @@ bool init()
     create_overlay();
     return SUCCEEDED(directx_init());
 }
+
+
+

@@ -186,6 +186,7 @@ namespace cache {
     inline int player_count;
     inline float closest_distance;
     inline uintptr_t closest_mesh;
+    inline float dist;
     inline uintptr_t overlapping;
     inline Camera local_camera;
     inline uintptr_t base;
