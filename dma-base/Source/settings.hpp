@@ -7,7 +7,7 @@ namespace settings
 	inline int screen_center_y = 1080 / 2;
 	inline bool show_menu = true;
 	inline int tab = 0;
-	
+
 	namespace aimbot
 	{
 		inline bool enable = false;
@@ -21,7 +21,7 @@ namespace settings
 		float projectileSpeed = 60;
 		float scaledProjectileSpeed = 60000.0f;
 	}
-	
+
 	namespace visuals
 	{
 		inline bool enable = false;
@@ -39,15 +39,16 @@ namespace settings
 		int fps_limit = 60;
 
 	}
-	
+
 	namespace kmbox
 	{
 		inline bool kmboxb = false;
 		inline bool kmboxnet = false;
-		inline bool confirm = false;
-		char KmboxIp[128] = "";
-		char KmboxPort[128] = "";
-		char KmboxUUID[128] = "";
+		char kmbox_ip[24] = "192.168.2.188";
+		char kmbox_port[10] = "8808";
+		char kmbox_uuid[32] = "4BB75C53";
+		bool show_kmbox_details_popup = false;
+
 	}
 }
 
