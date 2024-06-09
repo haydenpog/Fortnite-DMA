@@ -147,37 +147,7 @@ void skeleton(uintptr_t skeleton_mesh, const ImColor color)
     draw_list->AddLine(ImVec2(right_knee.x, right_knee.y), ImVec2(right_foot.x, right_foot.y), color, thickness);
 }
 
-void KmboxDetailsPopup()
-{
-    if (settings::kmbox::show_kmbox_details_popup)
-    {
-        ImGui::OpenPopup("Kmbox Details");
-    }
 
-    if (ImGui::BeginPopupModal("Kmbox Details", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-
-        ImGui::Text("Enter Kmbox IP:");
-        ImGui::InputText("##KmboxIp", settings::kmbox::kmbox_ip, IM_ARRAYSIZE(settings::kmbox::kmbox_ip));
-
-        ImGui::Text("Enter Kmbox Port:");
-        ImGui::InputText("##KmboxPort", settings::kmbox::kmbox_port, IM_ARRAYSIZE(settings::kmbox::kmbox_port));
-
-        ImGui::Text("Enter Kmbox UUID:");
-        ImGui::InputText("##KmboxUUID", settings::kmbox::kmbox_uuid, IM_ARRAYSIZE(settings::kmbox::kmbox_uuid));
-
-        if (ImGui::Button("OK", ImVec2(120, 0)))
-        {
-            ImGui::EndPopup();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(120, 0)))
-        {
-            ImGui::EndPopup();
-        }
-        ImGui::EndPopup();
-    }
-}
 
 void case0()
 {
@@ -200,13 +170,42 @@ void case0()
             {
                 settings::kmbox::show_kmbox_details_popup = true;
             }
-            KmboxDetailsPopup();
+            if (settings::kmbox::show_kmbox_details_popup)
+            {
+                ImGui::OpenPopup("Kmbox Details");
+            }
 
-            if (ImGui::Button("Connect to Kmbox .NET"))
+            if (ImGui::BeginPopupModal("Kmbox Details", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Enter Kmbox IP:");
+                ImGui::InputText("##KmboxIp", settings::kmbox::kmbox_ip, IM_ARRAYSIZE(settings::kmbox::kmbox_ip));
+
+                ImGui::Text("Enter Kmbox Port:");
+                ImGui::InputText("##KmboxPort", settings::kmbox::kmbox_port, IM_ARRAYSIZE(settings::kmbox::kmbox_port));
+
+                ImGui::Text("Enter Kmbox UUID:");
+                ImGui::InputText("##KmboxUUID", settings::kmbox::kmbox_uuid, IM_ARRAYSIZE(settings::kmbox::kmbox_uuid));
+
+                if (ImGui::Button("OK", ImVec2(120, 0)))
+                {
+                    settings::kmbox::show_kmbox_details_popup = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                    settings::kmbox::show_kmbox_details_popup = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+
+            if (ImGui::Checkbox("Connect to Kmbox .NET", &settings::kmbox::confirm))
             {
                 if (!kmNet_init(settings::kmbox::kmbox_ip, settings::kmbox::kmbox_port, settings::kmbox::kmbox_uuid))
                 {
-                    settings::kmbox::kmboxnet = false;
+                    settings::kmbox::confirm = false;
+                    printf("Failed to connect to Kmbox .NET");
                 }
                 else
                 {
@@ -226,7 +225,6 @@ void case0()
         }
     }
 }
-
 
 void case1()
 {

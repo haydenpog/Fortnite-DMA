@@ -44,9 +44,10 @@ namespace settings
 	{
 		inline bool kmboxb = false;
 		inline bool kmboxnet = false;
-		char kmbox_ip[24] = "192.168.2.188";
-		char kmbox_port[10] = "8808";
-		char kmbox_uuid[32] = "4BB75C53";
+		inline bool confirm = false;
+		static char kmbox_ip[24] = "192.168.2.188";
+		static char kmbox_port[10] = "8808";
+		static char kmbox_uuid[32] = "4BB75C53";
 		bool show_kmbox_details_popup = false;
 
 	}
