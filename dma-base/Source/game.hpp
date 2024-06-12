@@ -2,16 +2,10 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx9.h"
 #include "imgui/imgui_impl_win32.h"
-#include <dwmapi.h>
 #include <sdk.hpp>
 #include <settings.hpp>
 #include <render.hpp>
 #include <offsets.hpp>
-#include <thread>
-#include <atomic>
-#include <iostream>
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "dwmapi.lib")
 
 struct EntityData {
     Vector2 head2d;
@@ -32,7 +26,6 @@ void bases()
 {
     while (running)
     {
-        cache::base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
         cache::uworld = mem.Read<uintptr_t>(cache::base + offsets::UWORLD);
 
         cache::game_instance = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_INSTANCE);
