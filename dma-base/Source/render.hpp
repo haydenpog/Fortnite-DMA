@@ -244,30 +244,13 @@ void case1()
 void case2()
 {
     ImGui::Checkbox("FPS", &settings::visuals::fps);
-    if (settings::visuals::fps)
-    {
-        ImGui::SliderInt("FPS Limit", &settings::visuals::fps_limit, 30, 240);
-    }
     if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
 }
 
 void render_menu()
 {
-
+    
     ImGuiIO& io = ImGui::GetIO();
-    auto current_time = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_time);
-
-    if (settings::visuals::fps)
-    {
-        int frame_duration = 1000 / settings::visuals::fps_limit;
-        if (elapsed.count() < frame_duration)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(frame_duration - elapsed.count()));
-        }
-    }
-
-    last_time = current_time;
 
     if (settings::visuals::fps)
     {
@@ -276,6 +259,7 @@ void render_menu()
         ImGui::Text("FPS: %.2f", io.Framerate);
         ImGui::End();
     }
+    
 
     if (GetAsyncKeyState(VK_INSERT) & 1)
     {
@@ -291,7 +275,7 @@ void render_menu()
         ImGui::SetNextWindowSize({ 620, 350 });
         ImGui::Begin("Jouh", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
 
-        if (ImGui::Button("Aimbot", { 196, 20 })) settings::tab = 0;
+        if (ImGui::Button("Aimbot (Disabled)", { 196, 20 })) settings::tab = 0;
         ImGui::SameLine();
         if (ImGui::Button("Visuals", { 196, 20 })) settings::tab = 1;
         ImGui::SameLine();

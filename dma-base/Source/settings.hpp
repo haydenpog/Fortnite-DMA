@@ -7,6 +7,8 @@ namespace settings
 	inline int screen_center_y = 1080 / 2;
 	inline bool show_menu = true;
 	inline int tab = 0;
+	inline int rank;
+	inline int get_rank;
 
 	namespace aimbot
 	{

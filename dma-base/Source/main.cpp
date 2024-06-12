@@ -18,7 +18,11 @@ int main()
     }
     system("CLS");
     create_overlay();
+    std::thread logic_thread(actorloop);
+    HANDLE logic_thread_handle = logic_thread.native_handle();
+    SetThreadPriority(logic_thread_handle, THREAD_PRIORITY_HIGHEST);
+    logic_thread.detach();
     directx_init();
-    render_loop();
+    WPARAM result = render_loop();
     exit(0);
 }

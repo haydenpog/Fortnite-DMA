@@ -62,43 +62,43 @@ public:
 struct FQuat {
     double x, y, z, w;
 };
-
-struct FTransform {
-    FQuat rot;
+struct FTransform
+{
+    FQuat  rot;
     Vector3 translation;
-    char pad[4];
+    char    pad[8];
     Vector3 scale;
-    char pad1[4];
 
-    D3DMATRIX to_matrix_with_scale() const {
-        D3DMATRIX m{};
+    D3DMATRIX to_matrix_with_scale()
+    {
+        D3DMATRIX m;
         m._41 = translation.x;
         m._42 = translation.y;
         m._43 = translation.z;
 
-        float x2 = rot.x + rot.x;
-        float y2 = rot.y + rot.y;
-        float z2 = rot.z + rot.z;
-        float xx2 = rot.x * x2;
-        float yy2 = rot.y * y2;
-        float zz2 = rot.z * z2;
+        double x2 = rot.x + rot.x;
+        double y2 = rot.y + rot.y;
+        double z2 = rot.z + rot.z;
 
+        double xx2 = rot.x * x2;
+        double yy2 = rot.y * y2;
+        double zz2 = rot.z * z2;
         m._11 = (1.0f - (yy2 + zz2)) * scale.x;
         m._22 = (1.0f - (xx2 + zz2)) * scale.y;
         m._33 = (1.0f - (xx2 + yy2)) * scale.z;
 
-        float yz2 = rot.y * z2;
-        float wx2 = rot.w * x2;
+        double yz2 = rot.y * z2;
+        double wx2 = rot.w * x2;
         m._32 = (yz2 - wx2) * scale.z;
         m._23 = (yz2 + wx2) * scale.y;
 
-        float xy2 = rot.x * y2;
-        float wz2 = rot.w * z2;
+        double xy2 = rot.x * y2;
+        double wz2 = rot.w * z2;
         m._21 = (xy2 - wz2) * scale.y;
         m._12 = (xy2 + wz2) * scale.x;
 
-        float xz2 = rot.x * z2;
-        float wy2 = rot.w * y2;
+        double xz2 = rot.x * z2;
+        double wy2 = rot.w * y2;
         m._31 = (xz2 + wy2) * scale.z;
         m._13 = (xz2 - wy2) * scale.x;
 
@@ -185,14 +185,28 @@ namespace cache {
     inline uintptr_t player_array;
     inline int player_count;
     inline float closest_distance;
+    inline uintptr_t pawn_private;
     inline uintptr_t closest_mesh;
-    inline float dist;
+    inline uintptr_t box_width;
+    inline uintptr_t box_height;
+    inline uintptr_t mesh;
+    inline int player_team_id;
     inline uintptr_t overlapping;
     inline Camera local_camera;
     inline uintptr_t base;
+    inline Vector3 head3d;
+    inline Vector3 neck3d;
+    inline Vector3 bottom3d;
+    inline Vector3 Predictor;
+    inline Vector3 Velocity;
     inline Vector2 head2d;
     inline Vector2 neck2d;
     inline Vector2 hitbox_screen_predict;
+    static Vector2 bottom2d;
+    inline Vector2 target = { 0, 0 };
+    static float distance;
+    inline Vector3 shootable;
+    std::thread actor_thread;
 }
 
 Camera get_view_point() {
@@ -209,7 +223,6 @@ Camera get_view_point() {
     view_point.rotation.x = std::asin(fnrot.c) * (180.0 / M_PI);
     view_point.rotation.y = ((std::atan2(-fnrot.a, fnrot.b) * (180.0 / M_PI)) * -1) * -1;
     view_point.fov = mem.Read<float>(cache::player_controller + 0x394) * 90.f;
-
     return view_point;
 }
 
@@ -283,6 +296,7 @@ void kmBox::kmclick() {
     SendCommand(hSerial, command1.c_str());
 }
 
+/*
 
 Vector3 Prediction(Vector3 TargetPosition, Vector3 ComponentVelocity, float player_distance, float ProjectileSpeed = 239) {
     float gravity = 3.5f;
@@ -343,3 +357,24 @@ void move(float x, float y) {
         kmBox::sendMove(static_cast<int>(target.x), static_cast<int>(target.y));
     }
 }
+
+void aimbot()
+{
+    if (!cache::closest_mesh || !is_visible(cache::closest_mesh)) return;
+    if ((cache::head2d.x != 0 && cache::head2d.y != 0) || (cache::neck2d.x != 0 && cache::neck2d.y != 0))
+    {
+        float screen_center_x = settings::screen_center_x;
+        float screen_center_y = settings::screen_center_y;
+        float smoothness = settings::aimbot::smoothness;
+        if (settings::kmbox::kmboxnet && settings::aimbot::enable)
+        {
+            move(cache::hitbox_screen_predict.x, cache::hitbox_screen_predict.y);
+        }
+        if (settings::kmbox::kmboxb && settings::aimbot::enable)
+        {
+            move(cache::hitbox_screen_predict.x, cache::hitbox_screen_predict.y);
+        }
+    }
+}
+
+*/
