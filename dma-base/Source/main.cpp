@@ -11,6 +11,7 @@ int main()
     }
     system("CLS");
     cache::base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
+    mem.FixCr3();
     if (!init())
     {
         printf("The gui was not initialized");

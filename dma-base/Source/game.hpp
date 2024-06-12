@@ -17,15 +17,14 @@ struct EntityData {
     uintptr_t mesh;
 };
 
-
 std::vector<EntityData> entities;
+std::vector<EntityData> entities_render;
 std::atomic<bool> running(true);
+std::atomic<int> player_count(0);
 std::mutex data_mutex;
 
-void bases()
-{
-    while (running)
-    {
+void bases() {
+    while (running) {
         cache::uworld = mem.Read<uintptr_t>(cache::base + offsets::UWORLD);
 
         cache::game_instance = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_INSTANCE);
@@ -42,21 +41,18 @@ void bases()
 
         cache::game_state = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_STATE);
         cache::player_array = mem.Read<uintptr_t>(cache::game_state + offsets::PLAYER_ARRAY);
-        cache::player_count = mem.Read<int>(cache::game_state + (offsets::PLAYER_ARRAY + sizeof(uintptr_t)));
+        player_count.store(mem.Read<int>(cache::game_state + (offsets::PLAYER_ARRAY + sizeof(uintptr_t))));
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 
-void actorloop()
-{
-    while (running)
-    {
-        cache::closest_distance = FLT_MAX;
-        cache::closest_mesh = NULL;
+void actorloop() {
+    while (running) {
         std::vector<EntityData> temp_entities;
-        temp_entities.reserve(cache::player_count);
+        int count = player_count.load();
+        temp_entities.reserve(count);
 
-        for (int i = 0; i < cache::player_count; i++) {
+        for (int i = 0; i < count; i++) {
             uintptr_t player_state = mem.Read<uintptr_t>(cache::player_array + (i * sizeof(uintptr_t)));
             if (!player_state) continue;
 
@@ -69,9 +65,9 @@ void actorloop()
             uintptr_t mesh = mem.Read<uintptr_t>(pawn_private + offsets::MESH);
             if (!mesh) continue;
 
-            Vector3 head3d = get_entity_bone(mesh, bone::BONE_HEAD);
+            cache::head3d = get_entity_bone(mesh, bone::BONE_HEAD);
             Vector3 neck3d = get_entity_bone(mesh, bone::BONE_LOWERHEAD);
-            Vector2 head2d = project_world_to_screen(head3d);
+            Vector2 head2d = project_world_to_screen(cache::head3d);
             Vector2 neck2d = project_world_to_screen(neck3d);
             Vector3 bottom3d = get_entity_bone(mesh, 0);
             Vector2 bottom2d = project_world_to_screen(bottom3d);
@@ -92,19 +88,22 @@ void actorloop()
 
         {
             std::lock_guard<std::mutex> lock(data_mutex);
-            entities = std::move(temp_entities);
+            entities.swap(temp_entities);
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(4));
     }
 }
 
-void render_entities()
-{
+void render_entities() {
+    std::lock_guard<std::mutex> lock(data_mutex);
+    entities_render = entities; 
+}
+
+void draw_entities() {
     std::lock_guard<std::mutex> lock(data_mutex);
 
-    for (const auto& entity : entities)
-    {
+    for (const auto& entity : entities_render) {
         ImColor box_color = is_visible(entity.mesh)
             ? ImColor(settings::visuals::boxColor[0], settings::visuals::boxColor[1], settings::visuals::boxColor[2], settings::visuals::boxColor[3])
             : ImColor(settings::visuals::boxColor2[0], settings::visuals::boxColor2[1], settings::visuals::boxColor2[2], settings::visuals::boxColor2[3]);
@@ -144,10 +143,12 @@ WPARAM render_loop() {
         io.MousePos.y = static_cast<float>(p.y);
         io.MouseDown[0] = GetAsyncKeyState(VK_LBUTTON) != 0;
 
+
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
         render_entities();
+        draw_entities();
         render_menu();
 
         ImGui::EndFrame();
@@ -172,8 +173,7 @@ WPARAM render_loop() {
     return messager.wParam;
 }
 
-bool init()
-{
+bool init() {
     create_overlay();
     return SUCCEEDED(directx_init());
 }

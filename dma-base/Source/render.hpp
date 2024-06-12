@@ -85,9 +85,123 @@ void create_overlay()
     UpdateWindow(my_wnd);
 }
 
-void draw_cornered_box(int x, int y, int w, int h, const ImColor color, int thickness)
+
+const int radar_pos_x = 0;
+const int radar_pos_y = 0;
+const int radar_size = 500;
+const float radar_range = 1000.0f;  // Define radar range
+
+void RadarRange(float* x, float* y, float range)
 {
-    ImGui::GetForegroundDrawList()->AddRect(ImVec2(x, y), ImVec2(x + w, y + h), color, 0.0f, ImDrawFlags_RoundCornersNone, thickness);
+    if (fabs((*x)) > range || fabs((*y)) > range)
+    {
+        if ((*y) > (*x))
+        {
+            if ((*y) > -(*x))
+            {
+                (*x) = range * (*x) / (*y);
+                (*y) = range;
+            }
+            else
+            {
+                (*y) = -range * (*y) / (*x);
+                (*x) = -range;
+            }
+        }
+        else
+        {
+            if ((*y) > -(*x))
+            {
+                (*y) = range * (*y) / (*x);
+                (*x) = range;
+            }
+            else
+            {
+                (*x) = -range * (*x) / (*y);
+                (*y) = -range;
+            }
+        }
+    }
+}
+
+void CalcRadarPoint(Vector2 vOrigin, int& screenx, int& screeny)
+{
+    Camera view_point = get_view_point();
+
+    Vector2 vAngle;
+    vAngle.x = view_point.rotation.x;
+    vAngle.y = view_point.rotation.y;
+    auto fYaw = vAngle.y * M_PI / 180.0f;
+
+    float dx = vOrigin.x - view_point.location.x;
+    float dy = vOrigin.y - view_point.location.y;
+
+    float fsin_yaw = sinf(fYaw);
+    float fminus_cos_yaw = -cosf(fYaw);
+
+    float x = dy * fminus_cos_yaw + dx * fsin_yaw;
+    x = -x;
+    float y = dx * fminus_cos_yaw - dy * fsin_yaw;
+
+    float range = radar_range * 1000.f;
+
+    RadarRange(&x, &y, range);
+
+    ImVec2 DrawPos = ImVec2(radar_pos_x, radar_pos_y);
+    ImVec2 DrawSize = ImVec2(radar_size, radar_size);
+
+    int rad_x = (int)DrawPos.x;
+    int rad_y = (int)DrawPos.y;
+
+    float r_siz_x = DrawSize.x;
+    float r_siz_y = DrawSize.y;
+
+    int x_max = (int)r_siz_x + rad_x - 5;
+    int y_max = (int)r_siz_y + rad_y - 5;
+
+    screenx = rad_x + ((int)r_siz_x / 2 + int(x / range * r_siz_x));
+    screeny = rad_y + ((int)r_siz_y / 2 + int(y / range * r_siz_y));
+
+    if (screenx > x_max)
+        screenx = x_max;
+
+    if (screenx < rad_x)
+        screenx = rad_x;
+
+    if (screeny > y_max)
+        screeny = y_max;
+
+    if (screeny < rad_y)
+        screeny = rad_y;
+}
+
+void render_radar_main() {
+    ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(radar_pos_x, radar_pos_y), ImVec2(radar_pos_x + radar_size, radar_pos_y + radar_size), ImGui::GetColorU32({ 0.13f, 0.13f, 0.13f, 0.7f }), 0.f, 0);
+    ImVec2 center = ImVec2(radar_pos_x + (radar_size / 2), radar_pos_y + (radar_size / 2));
+    float orangeCircleRadius = 2.3f;
+    ImGui::GetBackgroundDrawList()->AddCircleFilled(center, orangeCircleRadius, ImGui::GetColorU32({ 1.f, 0.5f, 0.f, 1.f }), 12);
+}
+
+void add_to_radar(Vector2 WorldLocation, bool visible) {
+    int ScreenX = 0, ScreenY = 0;
+    CalcRadarPoint(WorldLocation, ScreenX, ScreenY);
+
+    if (!visible)
+    {
+        ImGui::GetBackgroundDrawList()->AddCircleFilled(ImVec2(ScreenX, ScreenY), 6.f, ImGui::GetColorU32({ 1.f, 0.f, 0.f, 1.f }), 12);
+    }
+    else
+    {
+        ImGui::GetBackgroundDrawList()->AddCircleFilled(ImVec2(ScreenX, ScreenY), 6.f, ImGui::GetColorU32({ 0.f, 1.f, 0.f, 1.f }), 12);
+    }
+
+    ImGui::GetBackgroundDrawList()->AddCircle(ImVec2(ScreenX, ScreenY), 6.f, ImGui::GetColorU32({ 0.f, 0.f, 0.f, 1.f }), 12, 1.f);
+}
+
+void draw_cornered_box(int x, int y, int w, int h, ImColor color, int thickness)
+{
+
+    ImGui::GetForegroundDrawList()->AddRect(ImVec2(x, y), ImVec2(x + w, y + h), color, 3.0f, 0, thickness);
 }
 
 void draw_filled_rect(int x, int y, int w, int h, const ImColor color)
