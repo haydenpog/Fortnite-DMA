@@ -17,10 +17,10 @@ struct EntityData {
     uintptr_t mesh;
 };
 
-std::atomic<bool> running(true);
-std::mutex data_mutex;
 
 std::vector<EntityData> entities;
+std::atomic<bool> running(true);
+std::mutex data_mutex;
 
 void bases()
 {
@@ -47,71 +47,61 @@ void bases()
     }
 }
 
-
-
-void actorloop() 
+void actorloop()
 {
-    while (running) 
+    while (running)
     {
-        try 
-            {
-                cache::closest_distance = FLT_MAX;
-                cache::closest_mesh = NULL;
-                std::vector<EntityData> temp_entities;
+        cache::closest_distance = FLT_MAX;
+        cache::closest_mesh = NULL;
+        std::vector<EntityData> temp_entities;
+        temp_entities.reserve(cache::player_count);
 
-                for (int i = 0; i < cache::player_count; i++) {
-                    uintptr_t player_state = mem.Read<uintptr_t>(cache::player_array + (i * sizeof(uintptr_t)));
-                    if (!player_state) continue;
+        for (int i = 0; i < cache::player_count; i++) {
+            uintptr_t player_state = mem.Read<uintptr_t>(cache::player_array + (i * sizeof(uintptr_t)));
+            if (!player_state) continue;
 
-                    int player_team_id = mem.Read<int>(player_state + offsets::TEAM_INDEX);
-                    if (player_team_id == cache::my_team_id) continue;
+            int player_team_id = mem.Read<int>(player_state + offsets::TEAM_INDEX);
+            if (player_team_id == cache::my_team_id) continue;
 
-                    uintptr_t pawn_private = mem.Read<uintptr_t>(player_state + offsets::PAWN_PRIVATE);
-                    if (!pawn_private || pawn_private == cache::local_pawn) continue;
+            uintptr_t pawn_private = mem.Read<uintptr_t>(player_state + offsets::PAWN_PRIVATE);
+            if (!pawn_private || pawn_private == cache::local_pawn) continue;
 
-                    uintptr_t mesh = mem.Read<uintptr_t>(pawn_private + offsets::MESH);
-                    if (!mesh) continue;
+            uintptr_t mesh = mem.Read<uintptr_t>(pawn_private + offsets::MESH);
+            if (!mesh) continue;
 
-                    cache::head3d = get_entity_bone(mesh, bone::BONE_HEAD);
-                    cache::neck3d = get_entity_bone(mesh, bone::BONE_LOWERHEAD);
-                    cache::head2d = project_world_to_screen(cache::head3d);
-                    cache::neck2d = project_world_to_screen(cache::neck3d);
-                    Vector3 bottom3d = get_entity_bone(mesh, 0);
-                    cache::bottom2d = project_world_to_screen(bottom3d);
-                    cache::box_height = abs(cache::head2d.y - cache::bottom2d.y);
-                    cache::box_width = static_cast<int>(cache::box_height * 0.50f);
-                    cache::distance = cache::relative_location.distance(bottom3d) / 100.0f;
-                    cache::box_height = abs(cache::head2d.y - cache::bottom2d.y);
-                    cache::box_width = static_cast<int>(cache::box_height * 0.50f);
+            Vector3 head3d = get_entity_bone(mesh, bone::BONE_HEAD);
+            Vector3 neck3d = get_entity_bone(mesh, bone::BONE_LOWERHEAD);
+            Vector2 head2d = project_world_to_screen(head3d);
+            Vector2 neck2d = project_world_to_screen(neck3d);
+            Vector3 bottom3d = get_entity_bone(mesh, 0);
+            Vector2 bottom2d = project_world_to_screen(bottom3d);
+            int box_height = abs(head2d.y - bottom2d.y);
+            int box_width = static_cast<int>(box_height * 0.50f);
+            float distance = cache::relative_location.distance(bottom3d) / 100.0f;
 
-                    temp_entities.push_back(EntityData(
-                        cache::head2d,
-                        cache::neck2d,
-                        cache::bottom2d,
-                        cache::box_width,
-                        cache::box_height,
-                        cache::distance,
-                        mesh
-                    ));
-                }
-
-                {
-                    std::lock_guard<std::mutex> lock(data_mutex);
-                    entities = std::move(temp_entities);
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            temp_entities.push_back(EntityData{
+                head2d,
+                neck2d,
+                bottom2d,
+                box_width,
+                box_height,
+                distance,
+                mesh
+                });
         }
-        catch (const std::exception& e) {
-            std::cerr << "Error: " << e.what() << std::endl;
+
+        {
+            std::lock_guard<std::mutex> lock(data_mutex);
+            entities = std::move(temp_entities);
         }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
 void render_entities()
 {
     std::lock_guard<std::mutex> lock(data_mutex);
-
-    std::vector<std::thread> skeleton_threads;
 
     for (const auto& entity : entities)
     {
@@ -131,14 +121,13 @@ void render_entities()
             draw_line(entity.bottom2d, box_color);
         }
         if (settings::visuals::skeleton) {
-           skeleton(entity.mesh, box_color);
+            skeleton(entity.mesh, box_color);
         }
         if (settings::visuals::distance) {
             draw_distance(entity.bottom2d, entity.distance, ImColor(250, 250, 250, 250));
         }
     }
 }
-
 
 WPARAM render_loop() {
     ZeroMemory(&messager, sizeof(MSG));
@@ -182,6 +171,7 @@ WPARAM render_loop() {
     }
     return messager.wParam;
 }
+
 bool init()
 {
     create_overlay();

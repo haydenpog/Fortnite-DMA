@@ -206,7 +206,6 @@ namespace cache {
     inline Vector2 target = { 0, 0 };
     static float distance;
     inline Vector3 shootable;
-    std::thread actor_thread;
 }
 
 Camera get_view_point() {
