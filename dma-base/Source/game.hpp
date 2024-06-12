@@ -13,14 +13,6 @@
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "dwmapi.lib")
 
-std::atomic<bool> running(true);
-std::ofstream log_file("actorloop_log.txt");
-std::mutex data_mutex;
-
-void log(const std::string& message) {
-    log_file << message << std::endl;
-}
-
 struct EntityData {
     Vector2 head2d;
     Vector2 neck2d;
@@ -31,7 +23,38 @@ struct EntityData {
     uintptr_t mesh;
 };
 
+std::atomic<bool> running(true);
+std::mutex data_mutex;
+
 std::vector<EntityData> entities;
+
+void bases()
+{
+    while (running)
+    {
+        cache::base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
+        cache::uworld = mem.Read<uintptr_t>(cache::base + offsets::UWORLD);
+
+        cache::game_instance = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_INSTANCE);
+        cache::local_players = mem.Read<uintptr_t>(mem.Read<uintptr_t>(cache::game_instance + offsets::LOCAL_PLAYERS));
+        cache::player_controller = mem.Read<uintptr_t>(cache::local_players + offsets::PLAYER_CONTROLLER);
+        cache::local_pawn = mem.Read<uintptr_t>(cache::player_controller + offsets::LOCAL_PAWN);
+
+        if (cache::local_pawn) {
+            cache::root_component = mem.Read<uintptr_t>(cache::local_pawn + offsets::ROOT_COMPONENT);
+            cache::relative_location = mem.Read<Vector3>(cache::root_component + offsets::RELATIVE_LOCATION);
+            cache::player_state = mem.Read<uintptr_t>(cache::local_pawn + offsets::PLAYER_STATE);
+            cache::my_team_id = mem.Read<int>(cache::player_state + offsets::TEAM_INDEX);
+        }
+
+        cache::game_state = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_STATE);
+        cache::player_array = mem.Read<uintptr_t>(cache::game_state + offsets::PLAYER_ARRAY);
+        cache::player_count = mem.Read<int>(cache::game_state + (offsets::PLAYER_ARRAY + sizeof(uintptr_t)));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
+
 
 void actorloop() 
 {
@@ -39,26 +62,6 @@ void actorloop()
     {
         try 
             {
-                cache::base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
-                cache::uworld = mem.Read<uintptr_t>(cache::base + offsets::UWORLD);
-                if (!cache::uworld) continue;
-
-                cache::game_instance = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_INSTANCE);
-                cache::local_players = mem.Read<uintptr_t>(mem.Read<uintptr_t>(cache::game_instance + offsets::LOCAL_PLAYERS));
-                cache::player_controller = mem.Read<uintptr_t>(cache::local_players + offsets::PLAYER_CONTROLLER);
-                cache::local_pawn = mem.Read<uintptr_t>(cache::player_controller + offsets::LOCAL_PAWN);
-
-                if (cache::local_pawn) {
-                    cache::root_component = mem.Read<uintptr_t>(cache::local_pawn + offsets::ROOT_COMPONENT);
-                    cache::relative_location = mem.Read<Vector3>(cache::root_component + offsets::RELATIVE_LOCATION);
-                    cache::player_state = mem.Read<uintptr_t>(cache::local_pawn + offsets::PLAYER_STATE);
-                    cache::my_team_id = mem.Read<int>(cache::player_state + offsets::TEAM_INDEX);
-                }
-
-                cache::game_state = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_STATE);
-                cache::player_array = mem.Read<uintptr_t>(cache::game_state + offsets::PLAYER_ARRAY);
-                cache::player_count = mem.Read<int>(cache::game_state + (offsets::PLAYER_ARRAY + sizeof(uintptr_t)));
-
                 cache::closest_distance = FLT_MAX;
                 cache::closest_mesh = NULL;
                 std::vector<EntityData> temp_entities;
@@ -103,6 +106,7 @@ void actorloop()
                     std::lock_guard<std::mutex> lock(data_mutex);
                     entities = std::move(temp_entities);
                 }
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
@@ -110,9 +114,11 @@ void actorloop()
     }
 }
 
-void render_entities() 
+void render_entities()
 {
     std::lock_guard<std::mutex> lock(data_mutex);
+
+    std::vector<std::thread> skeleton_threads;
 
     for (const auto& entity : entities)
     {
@@ -132,7 +138,7 @@ void render_entities()
             draw_line(entity.bottom2d, box_color);
         }
         if (settings::visuals::skeleton) {
-            skeleton(entity.mesh, box_color);
+           skeleton(entity.mesh, box_color);
         }
         if (settings::visuals::distance) {
             draw_distance(entity.bottom2d, entity.distance, ImColor(250, 250, 250, 250));

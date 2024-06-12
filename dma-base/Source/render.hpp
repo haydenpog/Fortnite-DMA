@@ -110,41 +110,42 @@ void draw_distance(const Vector2& location, float distance, const ImColor color)
 
 void skeleton(uintptr_t skeleton_mesh, const ImColor color)
 {
-    if (!skeleton_mesh || !settings::visuals::skeleton) return;
+        if (!skeleton_mesh || !settings::visuals::skeleton) return;
 
-    auto neck = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_HEAD));
-    auto chest = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_NECK));
-    auto left_shoulder = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LSHOULDER));
-    auto left_elbow = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LELBOW));
-    auto left_hand = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LHAND));
-    auto right_shoulder = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RSHOULDER));
-    auto right_elbow = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RELBOW));
-    auto right_hand = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RHAND));
-    auto pelvis = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_PELVIS));
-    auto left_hip = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LTHIGH));
-    auto left_knee = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LKNEE));
-    auto left_foot = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LFOOT));
-    auto right_hip = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RTHIGH));
-    auto right_knee = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RKNEE));
-    auto right_foot = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RFOOT));
+        auto neck = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_HEAD));
+        auto chest = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_NECK));
+        auto left_shoulder = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LSHOULDER));
+        auto left_elbow = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LELBOW));
+        auto left_hand = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LHAND));
+        auto right_shoulder = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RSHOULDER));
+        auto right_elbow = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RELBOW));
+        auto right_hand = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RHAND));
+        auto pelvis = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_PELVIS));
+        auto left_hip = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LTHIGH));
+        auto left_knee = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LKNEE));
+        auto left_foot = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_LFOOT));
+        auto right_hip = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RTHIGH));
+        auto right_knee = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RKNEE));
+        auto right_foot = project_world_to_screen(get_entity_bone(skeleton_mesh, bone::BONE_RFOOT));
 
-    auto draw_list = ImGui::GetBackgroundDrawList();
-    auto thickness = settings::visuals::skeleton_thick + 2.5f;
+        auto draw_list = ImGui::GetBackgroundDrawList();
+        auto thickness = settings::visuals::skeleton_thick + 2.5f;
 
-    draw_list->AddLine(ImVec2(neck.x, neck.y), ImVec2(chest.x, chest.y), color, thickness);
-    draw_list->AddLine(ImVec2(chest.x, chest.y), ImVec2(right_shoulder.x, right_shoulder.y), color, thickness);
-    draw_list->AddLine(ImVec2(left_shoulder.x, left_shoulder.y), ImVec2(chest.x, chest.y), color, thickness);
-    draw_list->AddLine(ImVec2(left_shoulder.x, left_shoulder.y), ImVec2(left_elbow.x, left_elbow.y), color, thickness);
-    draw_list->AddLine(ImVec2(left_elbow.x, left_elbow.y), ImVec2(left_hand.x, left_hand.y), color, thickness);
-    draw_list->AddLine(ImVec2(right_shoulder.x, right_shoulder.y), ImVec2(right_elbow.x, right_elbow.y), color, thickness);
-    draw_list->AddLine(ImVec2(right_elbow.x, right_elbow.y), ImVec2(right_hand.x, right_hand.y), color, thickness);
-    draw_list->AddLine(ImVec2(chest.x, chest.y), ImVec2(pelvis.x, pelvis.y), color, thickness);
-    draw_list->AddLine(ImVec2(pelvis.x, pelvis.y), ImVec2(left_hip.x, left_hip.y), color, thickness);
-    draw_list->AddLine(ImVec2(left_hip.x, left_hip.y), ImVec2(left_knee.x, left_knee.y), color, thickness);
-    draw_list->AddLine(ImVec2(left_knee.x, left_knee.y), ImVec2(left_foot.x, left_foot.y), color, thickness);
-    draw_list->AddLine(ImVec2(pelvis.x, pelvis.y), ImVec2(right_hip.x, right_hip.y), color, thickness);
-    draw_list->AddLine(ImVec2(right_hip.x, right_hip.y), ImVec2(right_knee.x, right_knee.y), color, thickness);
-    draw_list->AddLine(ImVec2(right_knee.x, right_knee.y), ImVec2(right_foot.x, right_foot.y), color, thickness);
+        draw_list->AddLine(ImVec2(neck.x, neck.y), ImVec2(chest.x, chest.y), color, thickness);
+        draw_list->AddLine(ImVec2(chest.x, chest.y), ImVec2(right_shoulder.x, right_shoulder.y), color, thickness);
+        draw_list->AddLine(ImVec2(left_shoulder.x, left_shoulder.y), ImVec2(chest.x, chest.y), color, thickness);
+        draw_list->AddLine(ImVec2(left_shoulder.x, left_shoulder.y), ImVec2(left_elbow.x, left_elbow.y), color, thickness);
+        draw_list->AddLine(ImVec2(left_elbow.x, left_elbow.y), ImVec2(left_hand.x, left_hand.y), color, thickness);
+        draw_list->AddLine(ImVec2(right_shoulder.x, right_shoulder.y), ImVec2(right_elbow.x, right_elbow.y), color, thickness);
+        draw_list->AddLine(ImVec2(right_elbow.x, right_elbow.y), ImVec2(right_hand.x, right_hand.y), color, thickness);
+        draw_list->AddLine(ImVec2(chest.x, chest.y), ImVec2(pelvis.x, pelvis.y), color, thickness);
+        draw_list->AddLine(ImVec2(pelvis.x, pelvis.y), ImVec2(left_hip.x, left_hip.y), color, thickness);
+        draw_list->AddLine(ImVec2(left_hip.x, left_hip.y), ImVec2(left_knee.x, left_knee.y), color, thickness);
+        draw_list->AddLine(ImVec2(left_knee.x, left_knee.y), ImVec2(left_foot.x, left_foot.y), color, thickness);
+        draw_list->AddLine(ImVec2(pelvis.x, pelvis.y), ImVec2(right_hip.x, right_hip.y), color, thickness);
+        draw_list->AddLine(ImVec2(right_hip.x, right_hip.y), ImVec2(right_knee.x, right_knee.y), color, thickness);
+        draw_list->AddLine(ImVec2(right_knee.x, right_knee.y), ImVec2(right_foot.x, right_foot.y), color, thickness);
+   
 }
 
 
