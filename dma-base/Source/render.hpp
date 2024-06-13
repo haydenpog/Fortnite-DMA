@@ -77,7 +77,7 @@ void create_overlay()
         wcex.hInstance, nullptr
     );
 
-    SetWindowLong(my_wnd, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW);
+    SetWindowLong(my_wnd, GWL_EXSTYLE, GetWindowLong(my_wnd, GWL_EXSTYLE) | WS_EX_LAYERED);
     SetLayeredWindowAttributes(my_wnd, RGB(0, 0, 0), 255, LWA_ALPHA);
     MARGINS margin = { -1 };
     DwmExtendFrameIntoClientArea(my_wnd, &margin);
@@ -340,6 +340,15 @@ void case2()
 {
     ImGui::Checkbox("FPS", &settings::visuals::fps);
     if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
+    ImGui::Checkbox("Transparent", &settings::misc::zero_alpha);
+    if (settings::misc::zero_alpha)
+    {
+        SetLayeredWindowAttributes(my_wnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
+    }
+    else
+    {
+        SetLayeredWindowAttributes(my_wnd, RGB(0, 0, 0), 255, LWA_ALPHA);
+    }
 }
 
 void render_menu()

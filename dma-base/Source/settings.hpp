@@ -53,6 +53,10 @@ namespace settings
 		bool show_kmbox_details_popup = false;
 
 	}
+	namespace misc
+	{
+	inline bool zero_alpha = false;
+	}
 }
 
 auto last_time = std::chrono::high_resolution_clock::now();
