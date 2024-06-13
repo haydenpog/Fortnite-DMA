@@ -27,8 +27,8 @@ HRESULT directx_init()
     p_params.SwapEffect = D3DSWAPEFFECT_DISCARD;
     p_params.hDeviceWindow = my_wnd;
     p_params.BackBufferFormat = D3DFMT_A8R8G8B8;
-    p_params.BackBufferWidth = 1920;
-    p_params.BackBufferHeight = 1080;
+    p_params.BackBufferWidth = settings::width;
+    p_params.BackBufferHeight = settings::height;
     p_params.EnableAutoDepthStencil = TRUE;
     p_params.AutoDepthStencilFormat = D3DFMT_D16;
     p_params.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
@@ -72,7 +72,7 @@ void create_overlay()
         "OverlayWindowTitle",
         WS_POPUP | WS_VISIBLE,
         0, 0,
-        1920, 1080,
+        settings::width, settings::height,
         nullptr, nullptr,
         wcex.hInstance, nullptr
     );
@@ -263,6 +263,21 @@ void skeleton(uintptr_t skeleton_mesh, const ImColor color)
 }
 
 
+std::string read_file(const std::string& filename, int line_number) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        return "";
+    }
+
+    std::string line;
+    int current_line = 0;
+    while (std::getline(file, line)) {
+        if (++current_line == line_number) {
+            return line;
+        }
+    }
+    return "";
+}
 
 void case0()
 {
@@ -277,59 +292,24 @@ void case0()
             }
         }
 
-        bool kmboxnet = ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet);
-        bool kmboxNetInitSuccess = false;
-        if (settings::kmbox::kmboxnet || kmboxnet)
+        if (ImGui::Checkbox("Kmbox Net", &settings::kmbox::kmboxnet))
         {
-            if (ImGui::Button("Enter Kmbox Details"))
-            {
-                settings::kmbox::show_kmbox_details_popup = true;
-            }
-            if (settings::kmbox::show_kmbox_details_popup)
-            {
-                ImGui::OpenPopup("Kmbox Details");
-            }
+            std::string ip = read_file("kmnet.txt", 1);
+            std::string port = read_file("kmnet.txt", 2);
+            std::string uuid = read_file("kmnet.txt", 3);
 
-            if (ImGui::BeginPopupModal("Kmbox Details", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-            {
-                ImGui::Text("Enter Kmbox IP:");
-                ImGui::InputText("##KmboxIp", settings::kmbox::kmbox_ip, IM_ARRAYSIZE(settings::kmbox::kmbox_ip));
+            strncpy(settings::kmbox::kmbox_ip, ip.c_str(), sizeof(settings::kmbox::kmbox_ip) - 1);
+            settings::kmbox::kmbox_ip[sizeof(settings::kmbox::kmbox_ip) - 1] = '\0';
 
-                ImGui::Text("Enter Kmbox Port:");
-                ImGui::InputText("##KmboxPort", settings::kmbox::kmbox_port, IM_ARRAYSIZE(settings::kmbox::kmbox_port));
+            strncpy(settings::kmbox::kmbox_port, port.c_str(), sizeof(settings::kmbox::kmbox_port) - 1);
+            settings::kmbox::kmbox_port[sizeof(settings::kmbox::kmbox_port) - 1] = '\0'; 
 
-                ImGui::Text("Enter Kmbox UUID:");
-                ImGui::InputText("##KmboxUUID", settings::kmbox::kmbox_uuid, IM_ARRAYSIZE(settings::kmbox::kmbox_uuid));
+            strncpy(settings::kmbox::kmbox_uuid, uuid.c_str(), sizeof(settings::kmbox::kmbox_uuid) - 1);
+            settings::kmbox::kmbox_uuid[sizeof(settings::kmbox::kmbox_uuid) - 1] = '\0';
 
-                if (ImGui::Button("OK", ImVec2(120, 0)))
-                {
-                    settings::kmbox::show_kmbox_details_popup = false;
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Cancel", ImVec2(120, 0)))
-                {
-                    settings::kmbox::show_kmbox_details_popup = false;
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::EndPopup();
-            }
-
-            if (ImGui::Checkbox("Connect to Kmbox .NET", &settings::kmbox::confirm))
-            {
-                if (!kmNet_init(settings::kmbox::kmbox_ip, settings::kmbox::kmbox_port, settings::kmbox::kmbox_uuid))
-                {
-                    settings::kmbox::confirm = false;
-                    printf("Failed to connect to Kmbox .NET");
-                }
-                else
-                {
-                    kmboxNetInitSuccess = true;
-                }
-            }
+            kmNet_init(settings::kmbox::kmbox_ip, settings::kmbox::kmbox_port, settings::kmbox::kmbox_uuid);
         }
-
-        if ((settings::kmbox::kmboxb) || (settings::kmbox::kmboxnet && kmboxNetInitSuccess))
+        if ((settings::kmbox::kmboxb) || (settings::kmbox::kmboxnet))
         {
             settings::aimbot::scaledProjectileSpeed = settings::aimbot::projectileSpeed * 1000.0f;
             ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);

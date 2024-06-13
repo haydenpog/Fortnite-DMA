@@ -3,8 +3,8 @@ namespace settings
 {
 	inline int width = GetSystemMetrics(SM_CXSCREEN);
 	inline int height = GetSystemMetrics(SM_CYSCREEN);
-	inline int screen_center_x = 1920 / 2;
-	inline int screen_center_y = 1080 / 2;
+	inline int screen_center_x = width / 2;
+	inline int screen_center_y = height / 2;
 	inline bool show_menu = true;
 	inline int tab = 0;
 	inline int rank;
@@ -47,9 +47,9 @@ namespace settings
 		inline bool kmboxb = false;
 		inline bool kmboxnet = false;
 		inline bool confirm = false;
-		static char kmbox_ip[24] = "192.168.2.188";
-		static char kmbox_port[10] = "8808";
-		static char kmbox_uuid[32] = "4BB75C53";
+		char kmbox_ip[24] = "";
+		char kmbox_port[10] = "";
+		char kmbox_uuid[32] = "";
 		bool show_kmbox_details_popup = false;
 
 	}

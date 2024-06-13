@@ -8,13 +8,13 @@
 #include <offsets.hpp>
 
 struct EntityData {
-    Vector2 head2d;
-    Vector2 neck2d;
     Vector2 bottom2d;
-    int box_width;
-    int box_height;
+    Vector2 head2d;
+    int box_width, box_height;
     float distance;
     uintptr_t mesh;
+
+    float boxLeft, boxRight;
 };
 
 std::vector<EntityData> entities;
@@ -46,6 +46,8 @@ void bases() {
     }
 }
 
+float closest_distance = FLT_MAX;
+uintptr_t closest_mesh = 0;
 void actorloop() {
     while (running) {
         std::vector<EntityData> temp_entities;
@@ -65,45 +67,61 @@ void actorloop() {
             uintptr_t mesh = mem.Read<uintptr_t>(pawn_private + offsets::MESH);
             if (!mesh) continue;
 
-            cache::head3d = get_entity_bone(mesh, bone::BONE_HEAD);
+            Vector3 head3d = get_entity_bone(mesh, bone::BONE_HEAD);
             Vector3 neck3d = get_entity_bone(mesh, bone::BONE_LOWERHEAD);
-            Vector2 head2d = project_world_to_screen(cache::head3d);
+            Vector2 head2d = project_world_to_screen(head3d);
             Vector2 neck2d = project_world_to_screen(neck3d);
             Vector3 bottom3d = get_entity_bone(mesh, 0);
             Vector2 bottom2d = project_world_to_screen(bottom3d);
+
             int box_height = abs(head2d.y - bottom2d.y);
             int box_width = static_cast<int>(box_height * 0.50f);
             float distance = cache::relative_location.distance(bottom3d) / 100.0f;
+            float dx = head2d.x - settings::screen_center_x;
+            float dy = head2d.y - settings::screen_center_y;
+            float dist = sqrtf(dx * dx + dy * dy);
+            float projectileSpeed = 60000; //= mem.Read<float>(cache::closest_mesh + 0x1a60);
+            float projectileGravityScale = 3.5f; //= mem.Read<float>(cache::closest_mesh + 0x1ccc );
+            Vector3 Velocity = mem.Read<Vector3>(mesh + 0x168);
+            Vector3 Predictor = Prediction(head3d, Velocity, distance, projectileSpeed);
+            Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
+
+            if (dist <= settings::aimbot::fov && dist < closest_distance) {
+                cache::closest_distance = dist;
+                cache::closest_mesh = mesh;
+                cache::head2d = head2d;
+                cache::neck2d = neck2d;
+                cache::hitbox_screen_predict = hitbox_screen_predict;
+            }
+            if (settings::kmbox::kmboxb) {
+                aimbot();
+            }
 
             temp_entities.push_back(EntityData{
-                head2d,
-                neck2d,
                 bottom2d,
+                head2d,
                 box_width,
                 box_height,
                 distance,
-                mesh
+                mesh,
                 });
         }
-
         {
             std::lock_guard<std::mutex> lock(data_mutex);
             entities.swap(temp_entities);
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(4));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
-
-void render_entities() {
-    std::lock_guard<std::mutex> lock(data_mutex);
-    entities_render = entities; 
-}
-
 void draw_entities() {
-    std::lock_guard<std::mutex> lock(data_mutex);
-
-    for (const auto& entity : entities_render) {
+    std::vector<EntityData> local_entities;
+    {
+        std::lock_guard<std::mutex> lock(data_mutex);
+        local_entities = entities;
+    }
+    for (const auto& entity : local_entities) 
+    {
         ImColor box_color = is_visible(entity.mesh)
             ? ImColor(settings::visuals::boxColor[0], settings::visuals::boxColor[1], settings::visuals::boxColor[2], settings::visuals::boxColor[3])
             : ImColor(settings::visuals::boxColor2[0], settings::visuals::boxColor2[1], settings::visuals::boxColor2[2], settings::visuals::boxColor2[3]);
@@ -147,7 +165,7 @@ WPARAM render_loop() {
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-        render_entities();
+        draw_entities();
         draw_entities();
         render_menu();
 

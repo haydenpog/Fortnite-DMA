@@ -295,7 +295,6 @@ void kmBox::kmclick() {
     SendCommand(hSerial, command1.c_str());
 }
 
-/*
 
 Vector3 Prediction(Vector3 TargetPosition, Vector3 ComponentVelocity, float player_distance, float ProjectileSpeed = 239) {
     float gravity = 3.5f;
@@ -376,4 +375,3 @@ void aimbot()
     }
 }
 
-*/
