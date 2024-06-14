@@ -11,6 +11,8 @@ int main()
     }
     system("CLS");
     cache::base = mem.GetBaseAddress("FortniteClient-Win64-Shipping.exe");
+    //std::string dumpPath = "fortnite_dump.bin";
+    //mem.DumpMemory(cache::base, dumpPath);
     mem.FixCr3();
     if (!init())
     {

@@ -1,6 +1,6 @@
 #pragma once
 namespace offsets {
-	inline int UWORLD = 0x12BA7050;
+	inline int UWORLD = 0x129CFDD8;
 	inline int GAME_INSTANCE = 0x1D8;
 	inline int LOCAL_PLAYERS = 0x38;
 	inline int PLAYER_CONTROLLER = 0x30;

@@ -16,17 +16,22 @@ struct EntityData {
 
     float boxLeft, boxRight;
 };
-
+std::ofstream log_file("actorloop_log.txt");
 std::vector<EntityData> entities;
 std::vector<EntityData> entities_render;
 std::atomic<bool> running(true);
 std::atomic<int> player_count(0);
 std::mutex data_mutex;
 
+void log_read(const std::string& name, uintptr_t value) {
+    log_file << name << ": " << std::hex << value << std::dec << std::endl;
+}
 void bases() {
     while (running) {
-        cache::uworld = mem.Read<uintptr_t>(cache::base + offsets::UWORLD);
-
+        __int64 va_text = 0;
+        for (int i = 0; i < 25; i++)
+            if (mem.Read<__int32>(cache::base + (i * 0x1000) + 0x250) == 0x260E020B) { va_text = cache::base + ((i + 1) * 0x1000); }
+        cache::uworld = mem.Read<__int64>(offsets::UWORLD + va_text);
         cache::game_instance = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_INSTANCE);
         cache::local_players = mem.Read<uintptr_t>(mem.Read<uintptr_t>(cache::game_instance + offsets::LOCAL_PLAYERS));
         cache::player_controller = mem.Read<uintptr_t>(cache::local_players + offsets::PLAYER_CONTROLLER);
@@ -48,6 +53,7 @@ void bases() {
 
 float closest_distance = FLT_MAX;
 uintptr_t closest_mesh = 0;
+
 void actorloop() {
     while (running) {
         std::vector<EntityData> temp_entities;
@@ -93,7 +99,7 @@ void actorloop() {
                 cache::neck2d = neck2d;
                 cache::hitbox_screen_predict = hitbox_screen_predict;
             }
-            if (settings::kmbox::kmboxb) {
+            if (settings::kmbox::kmboxb || settings::kmbox::kmboxnet) {
                 aimbot();
             }
 
