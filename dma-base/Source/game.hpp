@@ -16,16 +16,11 @@ struct EntityData {
 
     float boxLeft, boxRight;
 };
-std::ofstream log_file("actorloop_log.txt");
 std::vector<EntityData> entities;
-std::vector<EntityData> entities_render;
 std::atomic<bool> running(true);
 std::atomic<int> player_count(0);
 std::mutex data_mutex;
 
-void log_read(const std::string& name, uintptr_t value) {
-    log_file << name << ": " << std::hex << value << std::dec << std::endl;
-}
 void bases() {
     while (running) {
         __int64 va_text = 0;
