@@ -379,7 +379,7 @@ void render_menu()
         ImGui::SetNextWindowSize({ 620, 350 });
         ImGui::Begin("Jouh", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
 
-        if (ImGui::Button("Aimbot (Disabled)", { 196, 20 })) settings::tab = 0;
+        if (ImGui::Button("Aimbot", { 196, 20 })) settings::tab = 0;
         ImGui::SameLine();
         if (ImGui::Button("Visuals", { 196, 20 })) settings::tab = 1;
         ImGui::SameLine();

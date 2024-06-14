@@ -20,5 +20,5 @@ namespace offsets {
 	inline int BONE_ARRAY_CACHE = 0x5E8;
 	inline int LAST_SUMBIT_TIME = 0x2E8;
 	inline int LAST_SUMBIT_TIME_ON_SCREEN = 0x2F0;
-	inline int SHOOTABLE = 0x2680;
+	inline int SHOOTABLE = 0x18a8;
 }

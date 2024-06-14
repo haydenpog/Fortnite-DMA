@@ -205,7 +205,7 @@ namespace cache {
     static Vector2 bottom2d;
     inline Vector2 target = { 0, 0 };
     static float distance;
-    inline Vector3 shootable;
+    inline VMMDLL_SCATTER_HANDLE handle;
 }
 
 Camera get_view_point() {

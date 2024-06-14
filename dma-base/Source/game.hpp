@@ -1,4 +1,4 @@
-﻿#include <pch.h>
+﻿#include <Pch.h>
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx9.h"
 #include "imgui/imgui_impl_win32.h"
@@ -126,7 +126,7 @@ void draw_entities() {
         std::lock_guard<std::mutex> lock(data_mutex);
         local_entities = entities;
     }
-    for (const auto& entity : local_entities) 
+    for (const auto& entity : local_entities)
     {
         ImColor box_color = is_visible(entity.mesh)
             ? ImColor(settings::visuals::boxColor[0], settings::visuals::boxColor[1], settings::visuals::boxColor[2], settings::visuals::boxColor[3])
