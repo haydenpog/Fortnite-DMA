@@ -389,7 +389,7 @@
     <ClInclude Include="Source\offsets.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\sdk.hpp">
+    <ClInclude Include="Source\util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\settings.hpp">

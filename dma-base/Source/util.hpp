@@ -189,7 +189,9 @@ namespace cache {
     inline uintptr_t closest_mesh;
     inline uintptr_t box_width;
     inline uintptr_t box_height;
-    inline uintptr_t mesh;
+    inline uintptr_t mesh; 
+    inline uintptr_t LocationPointer;
+    inline uintptr_t RotationPointer;
     inline int player_team_id;
     inline uintptr_t overlapping;
     inline Camera local_camera;
@@ -206,6 +208,7 @@ namespace cache {
     inline Vector2 target = { 0, 0 };
     static float distance;
     inline VMMDLL_SCATTER_HANDLE handle;
+    inline Vector3 location;
 }
 
 Camera get_view_point() {
@@ -288,15 +291,15 @@ void kmBox::sendMove(int x, int y) {
 }
 
 void kmBox::kmclick() {
-    std::string command = "km.left(" + std::to_string(1) + ")\r\n"; // left mouse button down
-    Sleep(10); // to stop it from crashing idk
-    std::string command1 = "km.left(" + std::to_string(0) + ")\r\n"; // left mouse button up
+    std::string command = "km.left(" + std::to_string(1) + ")\r\n";
+    Sleep(10);
+    std::string command1 = "km.left(" + std::to_string(0) + ")\r\n";
     SendCommand(hSerial, command.c_str());
     SendCommand(hSerial, command1.c_str());
 }
 
 
-Vector3 Prediction(Vector3 TargetPosition, Vector3 ComponentVelocity, float player_distance, float ProjectileSpeed = 239) {
+Vector3 Prediction(Vector3 TargetPosition, Vector3 ComponentVelocity, float player_distance, float ProjectileSpeed = 60000) {
     float gravity = 3.5f;
     float TimeToTarget = player_distance / ProjectileSpeed;
     float bulletDrop = std::abs(gravity) * (TimeToTarget * TimeToTarget) * 0.5f;
@@ -352,7 +355,6 @@ void move(float x, float y) {
         kmNet_mouse_move(target.x, target.y);
     }
     if (settings::kmbox::kmboxb && settings::aimbot::enable) {
-        kmBox::sendMove(static_cast<int>(target.x), static_cast<int>(target.y));
     }
 }
 
@@ -373,5 +375,22 @@ void aimbot()
             move(cache::hitbox_screen_predict.x, cache::hitbox_screen_predict.y);
         }
     }
+}
+
+
+std::string read_file(const std::string& filename, int line_number) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        return "";
+    }
+
+    std::string line;
+    int current_line = 0;
+    while (std::getline(file, line)) {
+        if (++current_line == line_number) {
+            return line;
+        }
+    }
+    return "";
 }
 

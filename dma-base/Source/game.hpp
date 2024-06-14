@@ -1,8 +1,8 @@
-﻿#include <Pch.h>
+﻿#include <pch.h>
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx9.h"
 #include "imgui/imgui_impl_win32.h"
-#include <sdk.hpp>
+#include <util.hpp>
 #include <settings.hpp>
 #include <render.hpp>
 #include <offsets.hpp>
@@ -81,10 +81,8 @@ void actorloop() {
             float dx = head2d.x - settings::screen_center_x;
             float dy = head2d.y - settings::screen_center_y;
             float dist = sqrtf(dx * dx + dy * dy);
-            float projectileSpeed = 60000; //= mem.Read<float>(cache::closest_mesh + 0x1a60);
-            float projectileGravityScale = 3.5f; //= mem.Read<float>(cache::closest_mesh + 0x1ccc );
             Vector3 Velocity = mem.Read<Vector3>(mesh + 0x168);
-            Vector3 Predictor = Prediction(head3d, Velocity, distance, projectileSpeed);
+            Vector3 Predictor = Prediction(head3d, Velocity, distance, 60000);
             Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
 
             if (dist <= settings::aimbot::fov && dist < closest_distance) {
@@ -166,7 +164,6 @@ WPARAM render_loop() {
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-        draw_entities();
         draw_entities();
         render_menu();
 

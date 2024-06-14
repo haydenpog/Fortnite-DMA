@@ -229,7 +229,7 @@
     <ClInclude Include="Source\Misc\Pch\Pch.h" />
     <ClInclude Include="Source\offsets.hpp" />
     <ClInclude Include="Source\render.hpp" />
-    <ClInclude Include="Source\sdk.hpp" />
+    <ClInclude Include="Source\util.hpp" />
     <ClInclude Include="Source\settings.hpp" />
     <ClInclude Include="Source\﻿kmbox.hpp" />
   </ItemGroup>
