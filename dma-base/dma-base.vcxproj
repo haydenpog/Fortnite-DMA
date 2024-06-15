@@ -104,6 +104,7 @@
     <ClInclude Include="Include\imgui\imstb_textedit.h" />
     <ClInclude Include="Include\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\Config.h" />
+    <ClInclude Include="Source\config.hpp" />
     <ClInclude Include="Source\Dma\InputManager.h" />
     <ClInclude Include="Source\Dma\Registry.h" />
     <ClInclude Include="Source\game.hpp" />

@@ -6,7 +6,7 @@
 #include "imgui/imgui_impl_win32.h"
 #include <chrono>
 #include <thread>
-
+#include "config.hpp"
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "dwmapi.lib")
 
@@ -17,15 +17,6 @@ MSG messager = { nullptr };
 HWND my_wnd = nullptr;
 
 
-struct ColorSettings {
-    float blueColor[4] = { 0.28f, 0.56f, 1.00f, 1.00f };
-    float textColor[4] = { 0.95f, 0.96f, 0.98f, 1.00f };
-    float bgColor[4] = { 0.10f, 0.11f, 0.12f, 0.90f };
-
-};
-
-ColorSettings colorSettings;
-
 void style() {
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowRounding = 5.0f;
@@ -34,9 +25,9 @@ void style() {
     style.ScrollbarRounding = 5.0f;
     style.GrabRounding = 5.0f;
 
-    style.Colors[ImGuiCol_Text] = ImVec4(colorSettings.textColor[0], colorSettings.textColor[1], colorSettings.textColor[2], colorSettings.textColor[3]);
-    style.Colors[ImGuiCol_WindowBg] = ImVec4(colorSettings.bgColor[0], colorSettings.bgColor[1], colorSettings.bgColor[2], colorSettings.bgColor[3]);
-    style.Colors[ImGuiCol_ChildBg] = ImVec4(colorSettings.bgColor[0], colorSettings.bgColor[1], colorSettings.bgColor[2], colorSettings.bgColor[3]);
+    style.Colors[ImGuiCol_Text] = ImVec4(settings::misc::textColor[0], settings::misc::textColor[1], settings::misc::textColor[2], settings::misc::textColor[3]);
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(settings::misc::bgColor[0], settings::misc::bgColor[1], settings::misc::bgColor[2], settings::misc::bgColor[3]);
+    style.Colors[ImGuiCol_ChildBg] = ImVec4(settings::misc::bgColor[0], settings::misc::bgColor[1], settings::misc::bgColor[2], settings::misc::bgColor[3]);
     style.Colors[ImGuiCol_Border] = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
     style.Colors[ImGuiCol_FrameBg] = ImVec4(0.16f, 0.17f, 0.18f, 1.00f);
     style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.20f, 0.21f, 0.22f, 1.00f);
@@ -45,26 +36,26 @@ void style() {
     style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
     style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
 
-    style.Colors[ImGuiCol_CheckMark] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_SliderGrab] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_Button] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_ButtonActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_Header] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_HeaderActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_SeparatorActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_TabHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_DragDropTarget] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
-    style.Colors[ImGuiCol_NavHighlight] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_CheckMark] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_SliderGrab] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_Button] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_Header] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_HeaderActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_SeparatorActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_TabHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_DragDropTarget] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_NavHighlight] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
 }
 
 HRESULT directx_init()
@@ -94,6 +85,7 @@ HRESULT directx_init()
     ImGui_ImplDX9_Init(p_device);
     ImGui::GetIO().IniFilename = "imgui.ini";
     ImGui::GetIO().Fonts->AddFontFromFileTTF("..\include\font.otf", 18.0f);
+    load_settings_from_ini();
     style();
 
     p_object->Release();
@@ -210,9 +202,9 @@ void case2()
     bool colorUpdated = false;
     ImGui::Checkbox("Menu Colors", &settings::misc::color);
         if(settings::misc::color) {
-        colorUpdated |= ImGui::ColorEdit4("Text Color", colorSettings.textColor, ImGuiColorEditFlags_NoInputs);
-        colorUpdated |= ImGui::ColorEdit4("Background Color", colorSettings.bgColor, ImGuiColorEditFlags_NoInputs);
-        colorUpdated |= ImGui::ColorEdit4("Accent Color", colorSettings.blueColor, ImGuiColorEditFlags_NoInputs);
+        colorUpdated |= ImGui::ColorEdit4("Text Color", settings::misc::textColor, ImGuiColorEditFlags_NoInputs);
+        colorUpdated |= ImGui::ColorEdit4("Background Color", settings::misc::bgColor, ImGuiColorEditFlags_NoInputs);
+        colorUpdated |= ImGui::ColorEdit4("Accent Color", settings::misc::blueColor, ImGuiColorEditFlags_NoInputs);
         if (colorUpdated) {
             style();
         }
@@ -221,6 +213,9 @@ void case2()
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().ItemSpacing.y);
     ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 130);
     if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
+    ImGui::SetCursorPosY(ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().ItemSpacing.y);
+    ImGui::SetCursorPosX(10);
+    if (ImGui::Button("Save Config", { 120, 20 })) save_settings_to_ini();
 }
 
 void render_menu()
@@ -250,11 +245,11 @@ void render_menu()
         ImGui::Begin("Jouh", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar);
         ImGui::Text("JO\nUH");
         ImGui::SameLine();
-        if (ImGui::Button("Aimbot (not working)", { 188, 20 })) settings::tab = 0;
+        if (ImGui::Button("Aimbot (not working)", { 190, 20 })) settings::tab = 0;
         ImGui::SameLine();
         if (ImGui::Button("Visuals", { 188, 20 })) settings::tab = 1;
         ImGui::SameLine();
-        if (ImGui::Button("Misc", { 188, 20 })) settings::tab = 2;
+        if (ImGui::Button("Misc", { 190, 20 })) settings::tab = 2;
 
         switch (settings::tab)
         {
@@ -272,8 +267,7 @@ void render_menu()
         }
         ImGui::End();
     }
-    ImGui::EndFrame();
-}
+    ImGui::EndFrame();}
 void draw_cornered_box(int x, int y, int w, int h, ImColor color, int thickness)
 {
 

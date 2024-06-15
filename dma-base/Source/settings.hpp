@@ -55,5 +55,8 @@ namespace settings
 	inline bool zero_alpha = false;
 	int fps_limit = 60;
 	inline bool color = false;
+	float blueColor[4] = { 0.28f, 0.56f, 1.00f, 1.00f };
+	float textColor[4] = { 0.95f, 0.96f, 0.98f, 1.00f };
+	float bgColor[4] = { 0.10f, 0.11f, 0.12f, 0.90f };
 	}
 }
