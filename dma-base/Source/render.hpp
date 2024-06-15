@@ -16,7 +16,6 @@ D3DPRESENT_PARAMETERS p_params = { NULL };
 MSG messager = { nullptr };
 HWND my_wnd = nullptr;
 
-
 void style() {
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowRounding = 5.0f;
@@ -83,11 +82,10 @@ HRESULT directx_init()
     ImGui::CreateContext();
     ImGui_ImplWin32_Init(my_wnd);
     ImGui_ImplDX9_Init(p_device);
-    ImGui::GetIO().IniFilename = "imgui.ini";
     ImGui::GetIO().Fonts->AddFontFromFileTTF("..\include\font.otf", 18.0f);
     load_settings_from_ini();
     style();
-
+    
     p_object->Release();
     return S_OK;
 }
@@ -221,7 +219,6 @@ void case2()
 void render_menu()
 {
     ImGuiIO& io = ImGui::GetIO();
-
     if (settings::visuals::fps)
     {
         ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);

@@ -8,8 +8,6 @@ void load_settings_from_ini() {
     while (std::getline(ini_file, line)) {
         if (line.find("Aimbot") != std::string::npos) {
             ini_file >> settings::aimbot::enable;
-            ini_file >> settings::kmbox::kmboxb;
-            ini_file >> settings::kmbox::kmboxnet;
             ini_file >> settings::aimbot::projectileSpeed;
             ini_file >> settings::aimbot::fov;
             ini_file >> settings::aimbot::smoothness;
