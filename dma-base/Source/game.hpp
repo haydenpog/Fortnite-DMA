@@ -24,8 +24,11 @@ std::mutex data_mutex;
 void bases() {
     while (running) {
         __int64 va_text = 0;
-        for (int i = 0; i < 25; i++)
-            if (mem.Read<__int32>(cache::base + (i * 0x1000) + 0x250) == 0x260E020B) { va_text = cache::base + ((i + 1) * 0x1000); }
+        for (int i = 0; i < 25; i++) {
+            if (mem.Read<__int32>(cache::base + (i * 0x1000) + 0x250) == 0x260E020B) {
+                va_text = cache::base + ((i + 1) * 0x1000);
+            }
+        }
         cache::uworld = mem.Read<__int64>(offsets::UWORLD + va_text);
         cache::game_instance = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_INSTANCE);
         cache::local_players = mem.Read<uintptr_t>(mem.Read<uintptr_t>(cache::game_instance + offsets::LOCAL_PLAYERS));
@@ -42,7 +45,7 @@ void bases() {
         cache::game_state = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_STATE);
         cache::player_array = mem.Read<uintptr_t>(cache::game_state + offsets::PLAYER_ARRAY);
         player_count.store(mem.Read<int>(cache::game_state + (offsets::PLAYER_ARRAY + sizeof(uintptr_t))));
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
     }
 }
 
@@ -68,79 +71,54 @@ void actorloop() {
             uintptr_t mesh = mem.Read<uintptr_t>(pawn_private + offsets::MESH);
             if (!mesh) continue;
 
-            Vector3 head3d = get_entity_bone(mesh, bone::BONE_HEAD);
-            Vector3 neck3d = get_entity_bone(mesh, bone::BONE_LOWERHEAD);
-            Vector2 head2d = project_world_to_screen(head3d);
-            Vector2 neck2d = project_world_to_screen(neck3d);
-            Vector3 bottom3d = get_entity_bone(mesh, 0);
-            Vector2 bottom2d = project_world_to_screen(bottom3d);
+            EntityData entity;
+            entity.mesh = mesh;
 
-            int box_height = abs(head2d.y - bottom2d.y);
-            int box_width = static_cast<int>(box_height * 0.50f);
-            float distance = cache::relative_location.distance(bottom3d) / 100.0f;
-            float dx = head2d.x - settings::screen_center_x;
-            float dy = head2d.y - settings::screen_center_y;
-            float dist = sqrtf(dx * dx + dy * dy);
-            Vector3 Velocity = mem.Read<Vector3>(mesh + 0x168);
-            Vector3 Predictor = Prediction(head3d, Velocity, distance, 60000);
-            Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
-
-            if (dist <= settings::aimbot::fov && dist < closest_distance) {
-                cache::closest_distance = dist;
-                cache::closest_mesh = mesh;
-                cache::head2d = head2d;
-                cache::neck2d = neck2d;
-                cache::hitbox_screen_predict = hitbox_screen_predict;
-            }
-            if (settings::kmbox::kmboxb || settings::kmbox::kmboxnet) {
-                aimbot();
-            }
-
-            temp_entities.push_back(EntityData{
-                bottom2d,
-                head2d,
-                box_width,
-                box_height,
-                distance,
-                mesh,
-                });
+            temp_entities.push_back(entity);
         }
+
         {
             std::lock_guard<std::mutex> lock(data_mutex);
-            entities.swap(temp_entities);
+            entities = std::move(temp_entities);
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
+
 void draw_entities() {
-    std::vector<EntityData> local_entities;
-    {
-        std::lock_guard<std::mutex> lock(data_mutex);
-        local_entities = entities;
-    }
-    for (const auto& entity : local_entities)
-    {
+    std::lock_guard<std::mutex> lock(data_mutex);
+
+    for (const auto& entity : entities) {
+        Vector3 head3d = get_entity_bone(entity.mesh, bone::BONE_HEAD);
+        Vector2 head2d = project_world_to_screen(head3d);
+        Vector3 bottom3d = get_entity_bone(entity.mesh, 0);
+        Vector2 bottom2d = project_world_to_screen(bottom3d);
+
+        int box_height = abs(head2d.y - bottom2d.y);
+        int box_width = static_cast<int>(box_height * 0.50f);
+        float distance = cache::relative_location.distance(bottom3d) / 100.0f;
+
         ImColor box_color = is_visible(entity.mesh)
             ? ImColor(settings::visuals::boxColor[0], settings::visuals::boxColor[1], settings::visuals::boxColor[2], settings::visuals::boxColor[3])
             : ImColor(settings::visuals::boxColor2[0], settings::visuals::boxColor2[1], settings::visuals::boxColor2[2], settings::visuals::boxColor2[3]);
 
         if (settings::visuals::box) {
-            draw_cornered_box(entity.head2d.x - (entity.box_width / 2), entity.head2d.y, entity.box_width, entity.box_height, box_color, 1);
+            draw_cornered_box(head2d.x - (box_width / 2), head2d.y, box_width, box_height, box_color, 1);
         }
         if (settings::visuals::fill_box) {
             ImColor fill_color = box_color;
             fill_color.Value.w = 0.5f;
-            draw_filled_rect(entity.head2d.x - (entity.box_width / 2), entity.head2d.y, entity.box_width, entity.box_height, fill_color);
+            draw_filled_rect(head2d.x - (box_width / 2), head2d.y, box_width, box_height, fill_color);
         }
         if (settings::visuals::line) {
-            draw_line(entity.bottom2d, box_color);
+            draw_line(bottom2d, box_color);
         }
         if (settings::visuals::skeleton) {
             skeleton(entity.mesh, box_color);
         }
         if (settings::visuals::distance) {
-            draw_distance(entity.bottom2d, entity.distance, ImColor(250, 250, 250, 250));
+            draw_distance(bottom2d, distance, ImColor(250, 250, 250, 250));
         }
     }
 }
@@ -159,21 +137,16 @@ WPARAM render_loop() {
         io.MousePos.x = static_cast<float>(p.x);
         io.MousePos.y = static_cast<float>(p.y);
         io.MouseDown[0] = GetAsyncKeyState(VK_LBUTTON) != 0;
-
-
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
         draw_entities();
         render_menu();
-
         ImGui::EndFrame();
         p_device->SetRenderState(D3DRS_ZENABLE, FALSE);
         p_device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
         p_device->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-
         p_device->Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
-
         if (p_device->BeginScene() >= 0) {
             ImGui::Render();
             ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());

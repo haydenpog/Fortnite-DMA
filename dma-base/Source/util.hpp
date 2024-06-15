@@ -207,7 +207,6 @@ namespace cache {
     static Vector2 bottom2d;
     inline Vector2 target = { 0, 0 };
     static float distance;
-    inline VMMDLL_SCATTER_HANDLE handle;
     inline Vector3 location;
 }
 
@@ -266,6 +265,7 @@ bool is_visible(uintptr_t mesh) {
     float last_submit_time = mem.Read<float>(mesh + offsets::LAST_SUMBIT_TIME);
     float last_render_time_on_screen = mem.Read<float>(mesh + offsets::LAST_SUMBIT_TIME_ON_SCREEN);
     return last_render_time_on_screen + 0.06f >= last_submit_time;
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
 }
 
 bool kmBox::init() {
