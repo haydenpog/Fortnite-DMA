@@ -45,7 +45,7 @@ void bases() {
         cache::game_state = mem.Read<uintptr_t>(cache::uworld + offsets::GAME_STATE);
         cache::player_array = mem.Read<uintptr_t>(cache::game_state + offsets::PLAYER_ARRAY);
         player_count.store(mem.Read<int>(cache::game_state + (offsets::PLAYER_ARRAY + sizeof(uintptr_t))));
-        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2500));
     }
 }
 
@@ -73,7 +73,6 @@ void actorloop() {
 
             EntityData entity;
             entity.mesh = mesh;
-
             temp_entities.push_back(entity);
         }
 
@@ -82,7 +81,7 @@ void actorloop() {
             entities = std::move(temp_entities);
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }
 
