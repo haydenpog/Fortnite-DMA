@@ -54,5 +54,6 @@ namespace settings
 	{
 	inline bool zero_alpha = false;
 	int fps_limit = 60;
+	inline bool color = false;
 	}
 }

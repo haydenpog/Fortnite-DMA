@@ -16,6 +16,57 @@ D3DPRESENT_PARAMETERS p_params = { NULL };
 MSG messager = { nullptr };
 HWND my_wnd = nullptr;
 
+
+struct ColorSettings {
+    float blueColor[4] = { 0.28f, 0.56f, 1.00f, 1.00f };
+    float textColor[4] = { 0.95f, 0.96f, 0.98f, 1.00f };
+    float bgColor[4] = { 0.10f, 0.11f, 0.12f, 0.90f };
+
+};
+
+ColorSettings colorSettings;
+
+void style() {
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowRounding = 5.0f;
+    style.FrameRounding = 5.0f;
+    style.PopupRounding = 5.0f;
+    style.ScrollbarRounding = 5.0f;
+    style.GrabRounding = 5.0f;
+
+    style.Colors[ImGuiCol_Text] = ImVec4(colorSettings.textColor[0], colorSettings.textColor[1], colorSettings.textColor[2], colorSettings.textColor[3]);
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(colorSettings.bgColor[0], colorSettings.bgColor[1], colorSettings.bgColor[2], colorSettings.bgColor[3]);
+    style.Colors[ImGuiCol_ChildBg] = ImVec4(colorSettings.bgColor[0], colorSettings.bgColor[1], colorSettings.bgColor[2], colorSettings.bgColor[3]);
+    style.Colors[ImGuiCol_Border] = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+    style.Colors[ImGuiCol_FrameBg] = ImVec4(0.16f, 0.17f, 0.18f, 1.00f);
+    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.20f, 0.21f, 0.22f, 1.00f);
+    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.23f, 0.24f, 0.25f, 1.00f);
+    style.Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+
+    style.Colors[ImGuiCol_CheckMark] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_SliderGrab] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_Button] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_Header] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_HeaderActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_SeparatorActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_TabHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_DragDropTarget] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+    style.Colors[ImGuiCol_NavHighlight] = ImVec4(colorSettings.blueColor[0], colorSettings.blueColor[1], colorSettings.blueColor[2], colorSettings.blueColor[3]);
+}
+
 HRESULT directx_init()
 {
     if (FAILED(Direct3DCreate9Ex(D3D_SDK_VERSION, &p_object)))
@@ -41,7 +92,9 @@ HRESULT directx_init()
     ImGui::CreateContext();
     ImGui_ImplWin32_Init(my_wnd);
     ImGui_ImplDX9_Init(p_device);
-    ImGui::GetIO().IniFilename = nullptr;
+    ImGui::GetIO().IniFilename = "imgui.ini";
+    ImGui::GetIO().Fonts->AddFontFromFileTTF("..\include\font.otf", 18.0f);
+    style();
 
     p_object->Release();
     return S_OK;
@@ -128,23 +181,23 @@ void case0()
 
 void case1()
 {
-    ImGui::Checkbox("Enable", &settings::visuals::enable);
-    ImGui::Checkbox("Box", &settings::visuals::box);
-    if (settings::visuals::box)
+    ImGui::Checkbox("Enable Visuals", &settings::visuals::enable);
+    if (settings::visuals::enable)
     {
-        ImGui::ColorEdit4("Visible", settings::visuals::boxColor);
-        ImGui::ColorEdit4("Non-Visible", settings::visuals::boxColor2);
+        ImGui::Checkbox("Box", &settings::visuals::box);
+        ImGui::Checkbox("Fill Box", &settings::visuals::fill_box);
+        ImGui::Checkbox("Skeleton", &settings::visuals::skeleton);
+        ImGui::Checkbox("Line", &settings::visuals::line);
+        ImGui::Checkbox("Distance", &settings::visuals::distance);
+        ImGui::ColorEdit4("Visible", settings::visuals::boxColor, ImGuiColorEditFlags_NoInputs);
+        ImGui::SameLine();
+        ImGui::ColorEdit4("Non-Visible", settings::visuals::boxColor2, ImGuiColorEditFlags_NoInputs);
     }
-    ImGui::Checkbox("Fill Box", &settings::visuals::fill_box);
-    ImGui::Checkbox("Skeleton", &settings::visuals::skeleton);
-    ImGui::Checkbox("Line", &settings::visuals::line);
-    ImGui::Checkbox("Distance", &settings::visuals::distance);
 }
 
 void case2()
 {
     ImGui::Checkbox("FPS", &settings::visuals::fps);
-    if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
     ImGui::Checkbox("Transparent", &settings::misc::zero_alpha);
     if (settings::misc::zero_alpha)
     {
@@ -154,11 +207,24 @@ void case2()
     {
         SetLayeredWindowAttributes(my_wnd, RGB(0, 0, 0), 255, LWA_ALPHA);
     }
+    bool colorUpdated = false;
+    ImGui::Checkbox("Menu Colors", &settings::misc::color);
+        if(settings::misc::color) {
+        colorUpdated |= ImGui::ColorEdit4("Text Color", colorSettings.textColor, ImGuiColorEditFlags_NoInputs);
+        colorUpdated |= ImGui::ColorEdit4("Background Color", colorSettings.bgColor, ImGuiColorEditFlags_NoInputs);
+        colorUpdated |= ImGui::ColorEdit4("Accent Color", colorSettings.blueColor, ImGuiColorEditFlags_NoInputs);
+        if (colorUpdated) {
+            style();
+        }
+    }
+
+    ImGui::SetCursorPosY(ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().ItemSpacing.y);
+    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 130);
+    if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
 }
 
 void render_menu()
 {
-
     ImGuiIO& io = ImGui::GetIO();
 
     if (settings::visuals::fps)
@@ -168,7 +234,6 @@ void render_menu()
         ImGui::Text("FPS: %.2f", io.Framerate);
         ImGui::End();
     }
-
 
     if (GetAsyncKeyState(VK_INSERT) & 1)
     {
@@ -182,13 +247,14 @@ void render_menu()
     if (settings::show_menu)
     {
         ImGui::SetNextWindowSize({ 620, 350 });
-        ImGui::Begin("Jouh", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
-
-        if (ImGui::Button("Aimbot (not working)", { 196, 20 })) settings::tab = 0;
+        ImGui::Begin("Jouh", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar);
+        ImGui::Text("JO\nUH");
         ImGui::SameLine();
-        if (ImGui::Button("Visuals", { 196, 20 })) settings::tab = 1;
+        if (ImGui::Button("Aimbot (not working)", { 188, 20 })) settings::tab = 0;
         ImGui::SameLine();
-        if (ImGui::Button("Misc", { 196, 20 })) settings::tab = 2;
+        if (ImGui::Button("Visuals", { 188, 20 })) settings::tab = 1;
+        ImGui::SameLine();
+        if (ImGui::Button("Misc", { 188, 20 })) settings::tab = 2;
 
         switch (settings::tab)
         {
@@ -208,7 +274,6 @@ void render_menu()
     }
     ImGui::EndFrame();
 }
-
 void draw_cornered_box(int x, int y, int w, int h, ImColor color, int thickness)
 {
 
