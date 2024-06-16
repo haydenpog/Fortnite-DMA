@@ -21,3 +21,5 @@ Features
 
 New change log in discord
 https://discord.gg/REe2G5AwWh
+
+![Capture (1)](https://github.com/jouh1/Fortnite-DMA/assets/170565559/674b2417-5a03-4169-9920-4abc83860fbc)
