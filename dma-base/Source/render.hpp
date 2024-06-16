@@ -157,7 +157,7 @@ void case2()
     }
     bool colorUpdated = false;
     ImGui::Checkbox("Menu Colors", &settings::misc::color);
-        if(settings::misc::color) {
+    if (settings::misc::color) {
         colorUpdated |= ImGui::ColorEdit4("Text Color", settings::misc::textColor, ImGuiColorEditFlags_NoInputs);
         colorUpdated |= ImGui::ColorEdit4("Background Color", settings::misc::bgColor, ImGuiColorEditFlags_NoInputs);
         colorUpdated |= ImGui::ColorEdit4("Accent Color", settings::misc::blueColor, ImGuiColorEditFlags_NoInputs);
@@ -172,6 +172,37 @@ void case2()
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().ItemSpacing.y);
     ImGui::SetCursorPosX(10);
     if (ImGui::Button("Save Config", { 120, 20 })) save_settings_to_ini();
+    ImGui::SameLine();
+    if (ImGui::Button("KmBox Debug", { 120, 20 })) {
+        settings::debug::showDebugOptions = true;
+    }
+    if (settings::debug::showDebugOptions) {
+        ImGui::OpenPopup("Debug Options");
+    }
+
+    if (ImGui::BeginPopup("Debug Options")) {
+        if (ImGui::Button("Test KmboxB move")) {
+            ImGui::Text("Mouse should've moved");
+            kmBox::sendMove(50, 50);
+        }
+        if (ImGui::Button("Test Kmbox.NET move")) {
+            ImGui::Text("Mouse should've moved");
+            kmNet_mouse_move(50, 50);
+        }
+        if (ImGui::Button("Test KmboxB click")) {
+            ImGui::Text("Mouse should've moved");
+            kmBox::kmclick();
+        }
+        if (ImGui::Button("Test Kmbox.NET click")) {
+            ImGui::Text("Mouse should've moved");
+            kmNet_mouse_left(settings::debug::option4);
+        }
+        if (ImGui::Button("Close Debug Options", { 120, 20 })) {
+            settings::debug::showDebugOptions = false;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
 }
 
 void render_menu()

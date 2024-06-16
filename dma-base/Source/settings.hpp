@@ -59,4 +59,13 @@ namespace settings
 	float textColor[4] = { 0.95f, 0.96f, 0.98f, 1.00f };
 	float bgColor[4] = { 0.10f, 0.11f, 0.12f, 0.90f };
 	}
+
+	namespace debug
+	{
+		inline bool showDebugOptions = false;
+		inline bool option1 = false;
+		inline bool option2 = false;
+		inline bool option3 = false;
+		inline bool option4 = false;
+	}
 }
