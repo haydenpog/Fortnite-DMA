@@ -42,7 +42,7 @@ HRESULT directx_init()
     ImGui::CreateContext();
     ImGui_ImplWin32_Init(my_wnd);
     ImGui_ImplDX9_Init(p_device);
-    ImGui::GetIO().Fonts->AddFontFromFileTTF("..\include\font.otf", 18.0f);
+    //ImGui::GetIO().Fonts->AddFontFromFileTTF(include\font.otf, 18.0f);
     load_settings_from_ini();
     style();
     
@@ -211,7 +211,8 @@ void case2()
             ImGui::Dummy(ImVec2(0.0f, 10.0f)); 
             if (ImGui::Button("Test Kmbox.NET click", { 150, 20 })) {
                 ImGui::Text("Mouse should've moved");
-                kmNet_mouse_left(settings::debug::option4);
+                int down = 0;
+                kmNet_mouse_left(down);
             }
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             if (ImGui::Button("Close Debug Options", { 150, 20 })) {

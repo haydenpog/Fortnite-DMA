@@ -14,6 +14,7 @@ struct EntityData {
     float distance;
     uintptr_t mesh;
     Vector3 Velocity;
+    Vector3 ReticleLocation;
     float boxLeft, boxRight;
 };
 std::vector<EntityData> entities;
@@ -70,9 +71,12 @@ void actorloop() {
 
             Vector3 Velocity = mem.Read<Vector3>(cache::root_component + 0x168);
 
+            Vector3 ReticleLocation = mem.Read<Vector3>(cache::player_controller + offsets::LocationUnderReticle);
+
             EntityData entity;
             entity.mesh = mesh;
             entity.Velocity = Velocity;
+            entity.ReticleLocation = ReticleLocation;
             cache::player_count = count;
             temp_entities.push_back(entity);
         }
@@ -81,7 +85,7 @@ void actorloop() {
             entities = std::move(temp_entities);
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 
@@ -128,7 +132,7 @@ void draw_entities() {
         }
 
         float fov_radius = settings::aimbot::fov;
-        Vector2 screen_center = Vector2(settings::width / 2, settings::height / 2);
+        Vector2 screen_center = Vector2(settings::screen_center_x, settings::screen_center_y);
 
         double dx = head2d.x - screen_center.x;
         double dy = head2d.y - screen_center.y;
@@ -141,19 +145,27 @@ void draw_entities() {
 
         if (settings::aimbot::enable && cache::closest_mesh) {
             if (cache::player_count > 1) {
+                if (is_visible(entity.mesh)) {
                 Vector3 Predictor = Prediction(head3d, entity.Velocity, cache::closest_distance, 70000);
                 Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
                 move(hitbox_screen_predict.x, hitbox_screen_predict.y);
+                }
             }
         }
             if (settings::aimbot::triggerbot) {
-            Vector3 ReticleLocation = mem.Read<Vector3>(cache::player_controller + offsets::LocationUnderReticle);
-            if (IsShootable(ReticleLocation, head3d)) {
-                kmBox::kmclick();
+            if (IsShootable(entity.ReticleLocation, head3d)) {
+               kmBox::kmclick();
+            }
+            else
+            {
+                int isdown = 0;
+                kmNet_mouse_left(isdown);
             }
         }
     }
 }
+
+
 
 WPARAM render_loop() {
     ZeroMemory(&messager, sizeof(MSG));

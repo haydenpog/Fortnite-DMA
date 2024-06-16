@@ -17,7 +17,7 @@ namespace offsets {
 	inline uintptr_t ACTOR = 0xA0;
 	inline uintptr_t COMPONENT_TO_WORLD = 0x1C0;
 	inline uintptr_t BONE_ARRAY = 0x5B8;
-	inline uintptr_t BONE_ARRAY_CACHE = 0x5E8;
+	inline uintptr_t BONE_ARRAY_CACHE = 0x600;
 	inline uintptr_t LAST_SUMBIT_TIME = 0x2E8;
 	inline uintptr_t LAST_SUMBIT_TIME_ON_SCREEN = 0x2F0;
 	inline uintptr_t LocationUnderReticle = 0x26A0;
