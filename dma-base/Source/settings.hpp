@@ -17,6 +17,7 @@ namespace settings
 		inline bool show_fov = false;
 		inline float fov = 150;
 		inline float smoothness = 5;
+		float fovColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		inline bool prediction = false;
 		inline bool headbone = false;
 		inline bool chestbone = false;

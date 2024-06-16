@@ -121,6 +121,10 @@ void case0()
         {
             settings::aimbot::scaledProjectileSpeed = settings::aimbot::projectileSpeed * 1000.0f;
             ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
+            if (settings::aimbot::show_fov) {
+            ImGui::SameLine();
+            ImGui::ColorEdit4("Fov Color", settings::aimbot::fovColor, ImGuiColorEditFlags_NoInputs);
+            }
             ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
             ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 25.0f, "%.2f");
         }
@@ -155,16 +159,6 @@ void case2()
     {
         SetLayeredWindowAttributes(my_wnd, RGB(0, 0, 0), 255, LWA_ALPHA);
     }
-    bool colorUpdated = false;
-    ImGui::Checkbox("Menu Colors", &settings::misc::color);
-    if (settings::misc::color) {
-        colorUpdated |= ImGui::ColorEdit4("Text Color", settings::misc::textColor, ImGuiColorEditFlags_NoInputs);
-        colorUpdated |= ImGui::ColorEdit4("Background Color", settings::misc::bgColor, ImGuiColorEditFlags_NoInputs);
-        colorUpdated |= ImGui::ColorEdit4("Accent Color", settings::misc::blueColor, ImGuiColorEditFlags_NoInputs);
-        if (colorUpdated) {
-            style();
-        }
-    }
 
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().ItemSpacing.y);
     ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 130);
@@ -187,6 +181,8 @@ void case2()
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
         if (ImGui::BeginPopupModal("Debug Options", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
         {
+            ImGui::Text("Select kmbox type\nin aimbot section.");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
             if (ImGui::Button("Test KmboxB move", { 150, 20 })) {
                 ImGui::Text("Mouse should've moved");
                 kmBox::sendMove(50, 50);
@@ -207,9 +203,6 @@ void case2()
                 kmNet_mouse_left(settings::debug::option4);
             }
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); 
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 1.0f)); 
             if (ImGui::Button("Close Debug Options", { 150, 20 })) {
                 settings::debug::showDebugOptions = false;
                 ImGui::CloseCurrentPopup();
@@ -218,6 +211,27 @@ void case2()
             ImGui::EndPopup();
         }
         ImGui::PopStyleVar();
+    }
+    ImGui::SameLine();
+        bool colorUpdated = false;
+    if (ImGui::Button("Menu Colors", { 120, 20 })) {
+        ImGui::OpenPopup("Menu Colors Popup");
+    }
+
+    if (ImGui::BeginPopupModal("Menu Colors Popup", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGuiIO& io = ImGui::GetIO();
+        ImGui::SetNextWindowPos(ImVec2((io.DisplaySize.x - 400) / 2, (io.DisplaySize.y - 300) / 2));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+            colorUpdated |= ImGui::ColorEdit4("Text Color", settings::misc::textColor, ImGuiColorEditFlags_NoInputs);
+            colorUpdated |= ImGui::ColorEdit4("Background Color", settings::misc::bgColor, ImGuiColorEditFlags_NoInputs);
+            colorUpdated |= ImGui::ColorEdit4("Accent Color", settings::misc::blueColor, ImGuiColorEditFlags_NoInputs);
+            if (colorUpdated) {
+                style();
+            }
+        if (ImGui::Button("Close Menu Colors", { 150, 20 })) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
 }
 void render_menu()
@@ -235,9 +249,15 @@ void render_menu()
     {
         settings::show_menu = !settings::show_menu;
     }
-
+   
     if (settings::aimbot::show_fov) {
-        ImGui::GetForegroundDrawList()->AddCircle(ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2), settings::aimbot::fov, ImColor(250, 250, 250, 250), 100, 1.0f);
+        ImGui::GetForegroundDrawList()->AddCircle(
+            ImVec2(io.DisplaySize.x / 2, io.DisplaySize.y / 2),
+            settings::aimbot::fov,
+            ImColor(settings::aimbot::fovColor[0], settings::aimbot::fovColor[1], settings::aimbot::fovColor[2], settings::aimbot::fovColor[3]),
+            100, 
+            1.0f 
+        );
     }
 
     if (settings::show_menu)
