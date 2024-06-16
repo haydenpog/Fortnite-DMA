@@ -17,5 +17,7 @@ Features
 
 [+] Custom menu colors
 
+[+] Moonlight and fuser support
+
 New change log in discord
 https://discord.gg/REe2G5AwWh
