@@ -13,7 +13,7 @@ struct EntityData {
     int box_width, box_height;
     float distance;
     uintptr_t mesh;
-
+    Vector3 Velocity;
     float boxLeft, boxRight;
 };
 std::vector<EntityData> entities;
@@ -49,6 +49,7 @@ void bases() {
     }
 }
 
+
 float closest_distance = FLT_MAX;
 uintptr_t closest_mesh = 0;
 
@@ -71,8 +72,11 @@ void actorloop() {
             uintptr_t mesh = mem.Read<uintptr_t>(pawn_private + offsets::MESH);
             if (!mesh) continue;
 
+            Vector3 Velocity = mem.Read<Vector3>(cache::root_component + 0x168);
+
             EntityData entity;
             entity.mesh = mesh;
+            entity.Velocity = Velocity;
             temp_entities.push_back(entity);
         }
 
@@ -118,6 +122,11 @@ void draw_entities() {
         }
         if (settings::visuals::distance) {
             draw_distance(bottom2d, distance, ImColor(250, 250, 250, 250));
+        }
+        if (settings::aimbot::enable)  {
+        Vector3 Predictor = Prediction(head3d, entity.Velocity, distance, 70000);
+        Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
+        move(hitbox_screen_predict.x, hitbox_screen_predict.y - ((2 * 3) / 2));
         }
     }
 }

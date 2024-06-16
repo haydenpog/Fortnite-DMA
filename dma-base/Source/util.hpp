@@ -268,6 +268,61 @@ bool is_visible(uintptr_t mesh) {
     std::this_thread::sleep_for(std::chrono::milliseconds(150));
 }
 
+Vector3 Prediction(Vector3 TargetPosition, Vector3 ComponentVelocity, float player_distance, float ProjectileSpeed = 239) {
+    float gravity = 3.5f;
+    float TimeToTarget = player_distance / ProjectileSpeed;
+    float bulletDrop = std::abs(gravity) * (TimeToTarget * TimeToTarget) * 0.5f;
+    return Vector3(
+        TargetPosition.x + TimeToTarget * ComponentVelocity.x,
+        TargetPosition.y + TimeToTarget * ComponentVelocity.y,
+        TargetPosition.z + TimeToTarget * ComponentVelocity.z + bulletDrop
+    );
+}
+
+void move(float x, float y) {
+
+    Vector2 Target;
+    if (x != 0)
+    {
+        if (x > settings::screen_center_x)
+        {
+            Target.x = -(settings::screen_center_x - x);
+            Target.x /= settings::aimbot::smoothness;
+            if (Target.x + settings::screen_center_x > settings::screen_center_x * 2) Target.x = 0;
+        }
+
+        if (x < settings::screen_center_x)
+        {
+            Target.x = x - settings::screen_center_x;
+            Target.x /= settings::aimbot::smoothness;
+            if (Target.x + settings::screen_center_x < 0) Target.x = 0;
+        }
+    }
+    if (y != 0)
+    {
+        if (y > settings::screen_center_y)
+        {
+            Target.y = -(settings::screen_center_y - y);
+            Target.y /= settings::aimbot::smoothness;
+            if (Target.y + settings::screen_center_y > settings::screen_center_y * 2) Target.y = 0;
+        }
+
+        if (y < settings::screen_center_y)
+        {
+            Target.y = y - settings::screen_center_y;
+            Target.y /= settings::aimbot::smoothness;
+            if (Target.y + settings::screen_center_y < 0) Target.y = 0;
+        }
+    }
+
+    if (settings::kmbox::kmboxnet && settings::aimbot::enable) {
+        kmNet_mouse_move(Target.x, Target.y);
+    }
+    if (settings::kmbox::kmboxb && settings::aimbot::enable) {
+        kmBox::sendMove(Target.x, Target.y);
+    }
+}
+
 bool kmBox::init() {
     std::string port = kmBox::FindPort("USB-SERIAL CH340");
     if (port.empty()) {

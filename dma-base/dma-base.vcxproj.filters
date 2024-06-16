@@ -472,8 +472,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="Lib\FTD3XX.lib" />
     <Library Include="Lib\leechcore.lib" />
     <Library Include="Lib\vmm.lib" />
+    <Library Include="Lib\FTD3XX.lib" />
   </ItemGroup>
 </Project>

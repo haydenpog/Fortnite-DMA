@@ -16,6 +16,7 @@ D3DPRESENT_PARAMETERS p_params = { NULL };
 MSG messager = { nullptr };
 HWND my_wnd = nullptr;
 
+
 HRESULT directx_init()
 {
     if (FAILED(Direct3DCreate9Ex(D3D_SDK_VERSION, &p_object)))
@@ -120,10 +121,8 @@ void case0()
         {
             settings::aimbot::scaledProjectileSpeed = settings::aimbot::projectileSpeed * 1000.0f;
             ImGui::Checkbox("Show FOV Circle", &settings::aimbot::show_fov);
-            ImGui::Checkbox("Triggerbot", &settings::aimbot::triggerbot);
-            ImGui::SliderFloat("Prediction Speed", &settings::aimbot::projectileSpeed, 10.0f, 100.0f);
             ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
-            ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 10.0f, "%.2f");
+            ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 25.0f, "%.2f");
         }
     }
 }
@@ -169,7 +168,7 @@ void case2()
 
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().ItemSpacing.y);
     ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 130);
-    if (ImGui::Button("Unload Cheat", { 120, 20 })) exit(0);
+    if (ImGui::Button("Close", { 120, 20 })) exit(0);
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() - ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().ItemSpacing.y);
     ImGui::SetCursorPosX(10);
     if (ImGui::Button("Save Config", { 120, 20 })) save_settings_to_ini();
@@ -201,7 +200,7 @@ void render_menu()
         ImGui::Begin("Jouh", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar);
         ImGui::Text("JO\nUH");
         ImGui::SameLine();
-        if (ImGui::Button("Aimbot (not working)", { 190, 20 })) settings::tab = 0;
+        if (ImGui::Button("Aimbot", { 190, 20 })) settings::tab = 0;
         ImGui::SameLine();
         if (ImGui::Button("Visuals", { 188, 20 })) settings::tab = 1;
         ImGui::SameLine();
