@@ -85,6 +85,10 @@ void actorloop() {
     }
 }
 
+bool IsShootable(Vector3 lur, Vector3 wl) {
+    return (lur.x >= wl.x - 20 && lur.x <= wl.x + 20 && lur.y >= wl.y - 20 && lur.y <= wl.y + 20);
+}
+
 void draw_entities() {
     std::lock_guard<std::mutex> lock(data_mutex);
 
@@ -140,6 +144,12 @@ void draw_entities() {
                 Vector3 Predictor = Prediction(head3d, entity.Velocity, cache::closest_distance, 70000);
                 Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
                 move(hitbox_screen_predict.x, hitbox_screen_predict.y);
+            }
+        }
+            if (settings::aimbot::triggerbot) {
+            Vector3 ReticleLocation = mem.Read<Vector3>(cache::player_controller + offsets::LocationUnderReticle);
+            if (IsShootable(ReticleLocation, head3d)) {
+                kmBox::kmclick();
             }
         }
     }

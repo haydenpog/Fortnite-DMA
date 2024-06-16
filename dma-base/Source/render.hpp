@@ -125,6 +125,7 @@ void case0()
             ImGui::SameLine();
             ImGui::ColorEdit4("Fov Color", settings::aimbot::fovColor, ImGuiColorEditFlags_NoInputs);
             }
+            ImGui::Checkbox("Triggerbot", &settings::aimbot::triggerbot);
             ImGui::SliderFloat("FOV Radius", &settings::aimbot::fov, 50.0f, 300.0f, "%.2f");
             ImGui::SliderFloat("Smoothness", &settings::aimbot::smoothness, 1.0f, 25.0f, "%.2f");
         }
