@@ -49,10 +49,6 @@ void bases() {
     }
 }
 
-
-float closest_distance = FLT_MAX;
-uintptr_t closest_mesh = 0;
-
 void actorloop() {
     while (running) {
         std::vector<EntityData> temp_entities;
@@ -92,6 +88,9 @@ void actorloop() {
 void draw_entities() {
     std::lock_guard<std::mutex> lock(data_mutex);
 
+    float closest_distance = FLT_MAX;
+    cache::closest_mesh = NULL;
+
     for (const auto& entity : entities) {
         Vector3 head3d = get_entity_bone(entity.mesh, bone::BONE_HEAD);
         Vector2 head2d = project_world_to_screen(head3d);
@@ -127,20 +126,24 @@ void draw_entities() {
         float fov_radius = settings::aimbot::fov;
         Vector2 screen_center = Vector2(settings::width / 2, settings::height / 2);
 
-        float dx = head2d.x - screen_center.x;
-        float dy = head2d.y - screen_center.y;
-            if ((dx * dx + dy * dy) <= (fov_radius * fov_radius)) {
-                if (settings::aimbot::enable) {
-                    if (cache::player_count > 1) {
-                    Vector3 Predictor = Prediction(head3d, entity.Velocity, distance, 70000);
-                    Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
-                    move(hitbox_screen_predict.x, hitbox_screen_predict.y);
-                }
+        double dx = head2d.x - screen_center.x;
+        double dy = head2d.y - screen_center.y;
+        float dist = sqrtf(dx * dx + dy * dy);
+
+        if (dist <= fov_radius && dist < closest_distance) {
+            cache::closest_distance = dist;
+            cache::closest_mesh = entity.mesh;
+        }
+
+        if (settings::aimbot::enable && cache::closest_mesh) {
+            if (cache::player_count > 1) {
+                Vector3 Predictor = Prediction(head3d, entity.Velocity, cache::closest_distance, 70000);
+                Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
+                move(hitbox_screen_predict.x, hitbox_screen_predict.y);
             }
         }
     }
 }
-
 
 WPARAM render_loop() {
     ZeroMemory(&messager, sizeof(MSG));
