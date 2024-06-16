@@ -1,4 +1,5 @@
 #include <pch.h>
+
 void style() {
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowRounding = 5.0f;
@@ -7,39 +8,45 @@ void style() {
     style.ScrollbarRounding = 5.0f;
     style.GrabRounding = 5.0f;
 
+    auto adjustColor = [](ImVec4 color, float factor) -> ImVec4 {
+        color.x = std::clamp(color.x * factor, 0.0f, 1.0f);
+        color.y = std::clamp(color.y * factor, 0.0f, 1.0f);
+        color.z = std::clamp(color.z * factor, 0.0f, 1.0f);
+        return color;
+        };
+
     style.Colors[ImGuiCol_Text] = ImVec4(settings::misc::textColor[0], settings::misc::textColor[1], settings::misc::textColor[2], settings::misc::textColor[3]);
     style.Colors[ImGuiCol_WindowBg] = ImVec4(settings::misc::bgColor[0], settings::misc::bgColor[1], settings::misc::bgColor[2], settings::misc::bgColor[3]);
     style.Colors[ImGuiCol_ChildBg] = ImVec4(settings::misc::bgColor[0], settings::misc::bgColor[1], settings::misc::bgColor[2], settings::misc::bgColor[3]);
     style.Colors[ImGuiCol_Border] = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
     style.Colors[ImGuiCol_FrameBg] = ImVec4(0.16f, 0.17f, 0.18f, 1.00f);
-    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.20f, 0.21f, 0.22f, 1.00f);
-    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.23f, 0.24f, 0.25f, 1.00f);
+    style.Colors[ImGuiCol_FrameBgHovered] = adjustColor(style.Colors[ImGuiCol_FrameBg], 1.2f);
+    style.Colors[ImGuiCol_FrameBgActive] = adjustColor(style.Colors[ImGuiCol_FrameBg], 0.8f);
     style.Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
-    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    style.Colors[ImGuiCol_TitleBgActive] = adjustColor(style.Colors[ImGuiCol_TitleBg], 1.2f);
     style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
 
     style.Colors[ImGuiCol_CheckMark] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
     style.Colors[ImGuiCol_SliderGrab] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_SliderGrabActive] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 0.8f);
     style.Colors[ImGuiCol_Button] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_ButtonActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_ButtonHovered] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
+    style.Colors[ImGuiCol_ButtonActive] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 0.8f);
     style.Colors[ImGuiCol_Header] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_HeaderActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_SeparatorActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_HeaderHovered] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
+    style.Colors[ImGuiCol_HeaderActive] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 0.8f);
+    style.Colors[ImGuiCol_SeparatorHovered] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
+    style.Colors[ImGuiCol_SeparatorActive] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 0.8f);
     style.Colors[ImGuiCol_ResizeGrip] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_TabHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_DragDropTarget] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
-    style.Colors[ImGuiCol_NavHighlight] = ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]);
+    style.Colors[ImGuiCol_ResizeGripHovered] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
+    style.Colors[ImGuiCol_ResizeGripActive] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 0.8f);
+    style.Colors[ImGuiCol_TabHovered] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
+    style.Colors[ImGuiCol_PlotLinesHovered] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
+    style.Colors[ImGuiCol_PlotHistogramHovered] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
+    style.Colors[ImGuiCol_TextSelectedBg] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
+    style.Colors[ImGuiCol_DragDropTarget] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
+    style.Colors[ImGuiCol_NavHighlight] = adjustColor(ImVec4(settings::misc::blueColor[0], settings::misc::blueColor[1], settings::misc::blueColor[2], settings::misc::blueColor[3]), 1.2f);
 }
-
 
 
 void load_settings_from_ini() {

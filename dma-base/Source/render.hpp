@@ -180,31 +180,46 @@ void case2()
         ImGui::OpenPopup("Debug Options");
     }
 
-    if (ImGui::BeginPopup("Debug Options")) {
-        if (ImGui::Button("Test KmboxB move")) {
-            ImGui::Text("Mouse should've moved");
-            kmBox::sendMove(50, 50);
+    if (settings::debug::showDebugOptions)
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        ImGui::SetNextWindowPos(ImVec2((io.DisplaySize.x - 400) / 2, (io.DisplaySize.y - 300) / 2));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+        if (ImGui::BeginPopupModal("Debug Options", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            if (ImGui::Button("Test KmboxB move", { 150, 20 })) {
+                ImGui::Text("Mouse should've moved");
+                kmBox::sendMove(50, 50);
+            }
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            if (ImGui::Button("Test KmboxB click", { 150, 20 })) {
+                ImGui::Text("Mouse should've moved");
+                kmBox::kmclick();
+            }
+            ImGui::Dummy(ImVec2(0.0f, 10.0f)); 
+            if (ImGui::Button("Test Kmbox.NET move", { 150, 20 })) {
+                ImGui::Text("Mouse should've moved");
+                kmNet_mouse_move(50, 50);
+            }
+            ImGui::Dummy(ImVec2(0.0f, 10.0f)); 
+            if (ImGui::Button("Test Kmbox.NET click", { 150, 20 })) {
+                ImGui::Text("Mouse should've moved");
+                kmNet_mouse_left(settings::debug::option4);
+            }
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); 
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 1.0f)); 
+            if (ImGui::Button("Close Debug Options", { 150, 20 })) {
+                settings::debug::showDebugOptions = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::PopStyleColor(3);
+            ImGui::EndPopup();
         }
-        if (ImGui::Button("Test Kmbox.NET move")) {
-            ImGui::Text("Mouse should've moved");
-            kmNet_mouse_move(50, 50);
-        }
-        if (ImGui::Button("Test KmboxB click")) {
-            ImGui::Text("Mouse should've moved");
-            kmBox::kmclick();
-        }
-        if (ImGui::Button("Test Kmbox.NET click")) {
-            ImGui::Text("Mouse should've moved");
-            kmNet_mouse_left(settings::debug::option4);
-        }
-        if (ImGui::Button("Close Debug Options", { 120, 20 })) {
-            settings::debug::showDebugOptions = false;
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
+        ImGui::PopStyleVar();
     }
 }
-
 void render_menu()
 {
     ImGuiIO& io = ImGui::GetIO();
