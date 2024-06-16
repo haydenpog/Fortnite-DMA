@@ -77,6 +77,7 @@ void actorloop() {
             EntityData entity;
             entity.mesh = mesh;
             entity.Velocity = Velocity;
+            cache::player_count = count;
             temp_entities.push_back(entity);
         }
         {
@@ -128,11 +129,13 @@ void draw_entities() {
 
         float dx = head2d.x - screen_center.x;
         float dy = head2d.y - screen_center.y;
-        if ((dx * dx + dy * dy) <= (fov_radius * fov_radius)) {
-            if (settings::aimbot::enable) {
-                Vector3 Predictor = Prediction(head3d, entity.Velocity, distance, 70000);
-                Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
-                move(hitbox_screen_predict.x, hitbox_screen_predict.y);
+            if ((dx * dx + dy * dy) <= (fov_radius * fov_radius)) {
+                if (settings::aimbot::enable) {
+                    if (cache::player_count > 1) {
+                    Vector3 Predictor = Prediction(head3d, entity.Velocity, distance, 70000);
+                    Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
+                    move(hitbox_screen_predict.x, hitbox_screen_predict.y);
+                }
             }
         }
     }
