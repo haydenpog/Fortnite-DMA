@@ -79,7 +79,6 @@ void actorloop() {
             entity.Velocity = Velocity;
             temp_entities.push_back(entity);
         }
-
         {
             std::lock_guard<std::mutex> lock(data_mutex);
             entities = std::move(temp_entities);
@@ -123,13 +122,22 @@ void draw_entities() {
         if (settings::visuals::distance) {
             draw_distance(bottom2d, distance, ImColor(250, 250, 250, 250));
         }
-        if (settings::aimbot::enable)  {
-        Vector3 Predictor = Prediction(head3d, entity.Velocity, distance, 70000);
-        Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
-        move(hitbox_screen_predict.x, hitbox_screen_predict.y - ((2 * 3) / 2));
+
+        float fov_radius = settings::aimbot::fov;
+        Vector2 screen_center = Vector2(settings::width / 2, settings::height / 2);
+
+        float dx = head2d.x - screen_center.x;
+        float dy = head2d.y - screen_center.y;
+        if ((dx * dx + dy * dy) <= (fov_radius * fov_radius)) {
+            if (settings::aimbot::enable) {
+                Vector3 Predictor = Prediction(head3d, entity.Velocity, distance, 70000);
+                Vector2 hitbox_screen_predict = project_world_to_screen(Predictor);
+                move(hitbox_screen_predict.x, hitbox_screen_predict.y);
+            }
         }
     }
 }
+
 
 WPARAM render_loop() {
     ZeroMemory(&messager, sizeof(MSG));
