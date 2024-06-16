@@ -151,6 +151,16 @@ void case2()
 {
     ImGui::Checkbox("FPS", &settings::visuals::fps);
     ImGui::Checkbox("Transparent", &settings::misc::zero_alpha);
+    bool colorUpdated = false;
+    ImGui::Checkbox("Menu Colors", &settings::misc::color);
+        if (settings::misc::color) {
+        colorUpdated |= ImGui::ColorEdit4("Text Color", settings::misc::textColor, ImGuiColorEditFlags_NoInputs);
+        colorUpdated |= ImGui::ColorEdit4("Background Color", settings::misc::bgColor, ImGuiColorEditFlags_NoInputs);
+        colorUpdated |= ImGui::ColorEdit4("Accent Color", settings::misc::blueColor, ImGuiColorEditFlags_NoInputs);
+        if (colorUpdated) {
+            style();
+        }
+    }
     if (settings::misc::zero_alpha)
     {
         SetLayeredWindowAttributes(my_wnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
@@ -211,28 +221,7 @@ void case2()
             ImGui::EndPopup();
         }
         ImGui::PopStyleVar();
-    }
-    ImGui::SameLine();
-        bool colorUpdated = false;
-    if (ImGui::Button("Menu Colors", { 120, 20 })) {
-        ImGui::OpenPopup("Menu Colors Popup");
-    }
-
-    if (ImGui::BeginPopupModal("Menu Colors Popup", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGuiIO& io = ImGui::GetIO();
-        ImGui::SetNextWindowPos(ImVec2((io.DisplaySize.x - 400) / 2, (io.DisplaySize.y - 300) / 2));
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
-            colorUpdated |= ImGui::ColorEdit4("Text Color", settings::misc::textColor, ImGuiColorEditFlags_NoInputs);
-            colorUpdated |= ImGui::ColorEdit4("Background Color", settings::misc::bgColor, ImGuiColorEditFlags_NoInputs);
-            colorUpdated |= ImGui::ColorEdit4("Accent Color", settings::misc::blueColor, ImGuiColorEditFlags_NoInputs);
-            if (colorUpdated) {
-                style();
-            }
-        if (ImGui::Button("Close Menu Colors", { 150, 20 })) {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
-    }
+    }       
 }
 void render_menu()
 {
@@ -249,14 +238,14 @@ void render_menu()
     {
         settings::show_menu = !settings::show_menu;
     }
-   
+
     if (settings::aimbot::show_fov) {
         ImGui::GetForegroundDrawList()->AddCircle(
             ImVec2(io.DisplaySize.x / 2, io.DisplaySize.y / 2),
             settings::aimbot::fov,
             ImColor(settings::aimbot::fovColor[0], settings::aimbot::fovColor[1], settings::aimbot::fovColor[2], settings::aimbot::fovColor[3]),
-            100, 
-            1.0f 
+            100,
+            1.0f
         );
     }
 
@@ -288,7 +277,9 @@ void render_menu()
         }
         ImGui::End();
     }
-    ImGui::EndFrame();}
+    ImGui::EndFrame();
+}
+
 void draw_cornered_box(int x, int y, int w, int h, ImColor color, int thickness)
 {
 
